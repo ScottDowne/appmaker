@@ -7,8 +7,11 @@
       ready: function () {
         var that = this;
         this._eventListener = function(e) {
-          // Make sure that this <ceci-listen> is inside a valid ceci element, and that the broadcast which triggered this
-          if (that._element && that._element[that._handler]) {
+          // Make sure that this <ceci-listen> is inside a valid ceci element, and that the ceci-element is not being dragged for a sort.
+          if (!that._element || !that._element[that._handler] || that._element.classList.contains("ui-sortable-helper")) {
+            return;
+          }
+          that.async( function() {
             that._element[that._handler](e.detail.data, e.detail.extra);
             var listenerDetails = {
               handler : that._handler,
@@ -18,7 +21,7 @@
             };
             //This should somehow live in a ceci-listen-designer
             that.dispatchEvent(new CustomEvent('signalFired', {name: name, bubbles: true, detail: listenerDetails}));
-          }
+          });
         };
       },
       _element: null,

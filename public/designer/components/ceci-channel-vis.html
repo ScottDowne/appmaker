@@ -58,6 +58,11 @@ s<polymer-element name="ceci-channel-vis">
             element = this.shadowRoot.querySelector(".channel[color='"+channel+"'][from='"+handler+"']");
           }
 
+          // Channel was removed before the animation finished, so bail.
+          if (!element) {
+            return;
+          }
+
           // Add a signal indicator dot...
           var indicator = document.createElement("div");
           element.appendChild(indicator);
