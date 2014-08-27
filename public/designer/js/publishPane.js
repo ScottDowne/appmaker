@@ -98,8 +98,8 @@ define([], function () {
         email.classList.remove('fadeout');
         email.value = '';
         installbutton.setAttribute('href', data.install);
-        installlink.textContent = data.install;
-        installlink.setAttribute('href', data.install);
+        installlink.textContent = data.installContainer;
+        installlink.setAttribute('href', data.installContainer);
         viewbutton.setAttribute('href', data.app);
         instsallQRCode.innerHTML = '';
         new QRCode(instsallQRCode, data.install);

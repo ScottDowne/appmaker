@@ -46,7 +46,7 @@ var os = require('os');
 var interfaces = os.networkInterfaces();
 var ipv4Address;
 
-['PUBLISH_HOST','ASSET_HOST'].forEach(function (key) {
+['PUBLISH_HOST','ASSET_HOST','IFRAME_HOST'].forEach(function (key) {
   if (process.env[key]) {
     if (process.env[key].indexOf('{{ip}}') > -1) {
       if (!ipv4Address) {
@@ -175,7 +175,13 @@ app.configure(function(){
 var store;
 store = s3Store.init(process.env.S3_KEY, process.env.S3_SECRET, process.env.S3_BUCKET, process.env.S3_DOMAIN, emulate_s3);
 
-var urlManager = new urls.URLManager(process.env.PUBLISH_HOST_PREFIX, process.env.PUBLISH_HOST, process.env.S3_OBJECT_PREFIX, !emulate_s3);
+var urlManager = new urls.URLManager({
+  publishHostPrefix: process.env.PUBLISH_HOST_PREFIX,
+  iframeHost: process.env.IFRAME_HOST,
+  publishHost: process.env.PUBLISH_HOST,
+  objectPrefix: process.env.S3_OBJECT_PREFIX,
+  useSubdomains: !emulate_s3
+});
 routes = require('./routes')(
   store,
   __dirname + '/views',

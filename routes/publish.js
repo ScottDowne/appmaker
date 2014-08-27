@@ -51,6 +51,13 @@ module.exports = function (store, viewsPath, urlManager, makeAPIPublisher, dbcon
     });
   });
 
+  fs.readFile(viewsPath + '/installContainer.ejs', 'utf8', function (err, installContainerHTMLData) {
+    templates.installContainer = ejs.compile(installContainerHTMLData, {
+      // for partial include access
+      filename: viewsPath + '/publish.ejs'
+    });
+  });
+
   function getUserComponents (req, callback) {
     if (!process.env.ALLOW_CUSTOM_COMPONENTS) {
       callback([]);
@@ -81,14 +88,17 @@ module.exports = function (store, viewsPath, urlManager, makeAPIPublisher, dbcon
         var folderName = moniker.choose() + '-' + Math.round(Math.random() * 1000);
         var userName = req.session.user.username;
         var installHTMLFilename =  'install';
+        var installContainerFilename =  'index';
         var appHTMLFilename = 'app';
         var manifestFilename = 'manifest.webapp';
 
         var remoteURLPrefix = urlManager.createURLPrefix(folderName);
+        var installContainerPrefix = urlManager.createInstallContainerPrefix(folderName);
         var launchPath = urlManager.createLaunchPath(folderName);
 
         var remoteURLs = {
           install: remoteURLPrefix + installHTMLFilename,
+          installContainer: installContainerPrefix + installContainerFilename,
           app: remoteURLPrefix + appHTMLFilename,
           manifest: remoteURLPrefix + manifestFilename
         };
@@ -140,6 +150,11 @@ module.exports = function (store, viewsPath, urlManager, makeAPIPublisher, dbcon
             webmakerurl: process.env.WEBMAKER_URL || ""
           });
 
+          var installContainerStr = templates.installContainer({
+            installSrc: remoteURLs.install,
+            appname: appName
+          });
+
           var manifestJSON = {
             "name": appName,
             "description": appDescription,
@@ -176,7 +191,9 @@ module.exports = function (store, viewsPath, urlManager, makeAPIPublisher, dbcon
             {filename: urlManager.objectPrefix + '/' + folderName + '/' + appHTMLFilename,
               data: appStr},
             {filename: urlManager.objectPrefix + '/' + folderName + '/' + installHTMLFilename,
-              data: installStr}
+              data: installStr},
+            {filename: urlManager.objectPrefix + '/' + folderName + '/' + installContainerFilename,
+              data: installContainerStr}
           ].concat(iconFiles);
 
           var filesDone = 0;
@@ -207,6 +224,7 @@ module.exports = function (store, viewsPath, urlManager, makeAPIPublisher, dbcon
                 res.json({error: null,
                   app: remoteURLs.app,
                   install: remoteURLs.install,
+                  installContainer: remoteURLs.installContainer,
                   manifest: remoteURLs.manifest
                 }, 200);
                 // Don't wait for the MakeAPI to deliver url to user
