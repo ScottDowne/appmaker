@@ -1,0 +1,28 @@
+:host {
+  display: block;
+  width: 100%;
+  position: relative;
+}
+
+:host .game-board {
+  position: relative;
+  height: 0px;
+  width: 100%;
+  padding-bottom: 100%;
+  background-color: black;
+}
+
+:host .player-2 {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZUlEQVQ4jdWTOw7AIAxDff9Lu0tpY2OqsFFLSOTjBxkCAFydoa8enAtw/QTABoAdwEoR4K+K/zbUcPqNEoM5QBRQiTRAulv/A9iVAEK1l3MAwswCCKPirUMAvgs1L7Vq3l0mkrwAzXM74XY1VL4AAAAASUVORK5CYII=);
+}
+
+:host .player-2-projectile {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+}

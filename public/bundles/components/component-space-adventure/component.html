@@ -1,0 +1,135 @@
+<polymer-element name="ceci-space-adventure" extends="ceci-element" attributes="playerTwoMoveSpeed playerTwoProjectileSpeed playerTwoProjectileRate" playerTwoProjectileSpeed="1"playerTwoMoveSpeed="1" playerTwoProjectileRate="1">
+  <ceci-definition>
+    {
+      "name": "Space Adventure",
+      "thumbnail": "",
+      "description": "",
+      "broadcasts": {
+        "data": {
+          "label": "",
+          "description": ""
+        },
+        "send": {
+          "label": "",
+          "description": ""
+        }
+      },
+      "listeners": {
+        "playerTwoAction": {
+          "description": "Move player two right or left",
+          "label": ""
+        },
+        "playerTwoStop": {
+          "description": "Stop player two movement.",
+          "label": ""
+        }
+      },
+      "attributes": {
+        "playerTwoMoveSpeed": {
+          "description": "",
+          "label": "Player Two Move Speed",
+          "editable": "number"
+        },
+        "playerTwoProjectileSpeed": {
+          "description": "",
+          "label": "Player Two Projectile Speed",
+          "editable": "number"
+        },
+        "playerTwoProjectileRate": {
+          "description": "",
+          "label": "Player Two Projectile Rate",
+          "editable": "number"
+        }
+      }
+    }
+  </ceci-definition>
+  <template>
+    <link rel="stylesheet" href="component.css"></link>
+    <div class="game-board">
+      <div class="player-2"></div>
+    </div>
+    <shadow></shadow>
+  </template>
+    <script>
+      Polymer("ceci-space-adventure", {
+        ready: function() {
+          this.super();
+          window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                                         window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+          this.playerTwoPosition = 0;
+          this.playerTwoMoving = false;
+        },
+        playerTwoAnimateProjectile: function() {
+          var playerProjectile = document.createElement("div");
+          var that = this;
+          playerProjectile.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVQ4jWNgYGD4TyEeNWCYGPD/PyrGpRiHOpgADBAyAEMd1QygxAtLUTFOA7CrY/j/Hw3jNAC7OlRJQtGGRR1lBgAABrNj2GoxiV8AAAAASUVORK5CYII=)";
+          playerProjectile.style.left = that.playerTwoPosition + "px";
+          playerProjectile.style.bottom = "16px";
+          playerProjectile.classList.add("player-2-projectile");
+          this.shadowRoot.querySelector(".game-board").appendChild(playerProjectile);
+          function animateProjectile() {
+            if (playerProjectile.offsetTop > 0) {
+              playerProjectile.style.top = ( playerProjectile.offsetTop - that.playerTwoProjectileSpeed ) + "px";
+              window.requestAnimationFrame(animateProjectile);
+            } else {
+              that.shadowRoot.querySelector(".game-board").removeChild(playerProjectile);
+            }
+          }
+          animateProjectile();
+        },
+        playerTwoFire: function() {
+          this.playerTwoFiring = true;
+          var timeStamp = 0;
+          var that = this;
+          function fireProjectile() {
+            if (that.playerTwoFiring) {
+              var diff = Date.now()/1000 - timeStamp;
+              if (timstamp = 0 || diff >= that.playerTwoProjectileRate-0) {
+                that.playerTwoAnimateProjectile();
+                timeStamp = Date.now()/1000;
+              }
+
+              window.requestAnimationFrame(fireProjectile);
+            }
+          }
+          fireProjectile();
+        },
+        playerTwoAction: function(dir) {
+          var player = this.shadowRoot.querySelector(".player-2");
+          var that = this;
+          if (dir === "a" || dir === "b") {
+            this.playerTwoFire();
+            return;
+          }
+          if (dir === "left") {
+            this.playerTwoMovingLeft = true;
+            this.playerTwoMovingRight = false;
+            function moveLeft() {
+              if (that.playerTwoMovingLeft && that.playerTwoPosition>0) {
+                that.playerTwoPosition-=(that.playerTwoMoveSpeed-0);
+                player.style.left = that.playerTwoPosition + "px";
+                window.requestAnimationFrame(moveLeft);
+              }
+            }
+            moveLeft();
+          } else {
+            this.playerTwoMovingLeft = false;
+            this.playerTwoMovingRight = true;
+            function moveRight() {
+              if (that.playerTwoMovingRight && that.playerTwoPosition<295) {
+                that.playerTwoPosition+=(that.playerTwoMoveSpeed-0);
+                player.style.left = that.playerTwoPosition + "px";
+                window.requestAnimationFrame(moveRight);
+              }
+            }
+            moveRight();
+          }
+        },
+        playerTwoStop: function() {
+          this.playerTwoMovingLeft = false;
+          this.playerTwoMovingRight = false;
+          this.playerTwoFiring = false;
+        }
+      });
+    </script>
+</polymer-element>
