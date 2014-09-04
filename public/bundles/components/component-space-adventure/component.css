@@ -12,16 +12,24 @@
   background-color: black;
 }
 
-:host .player-2 {
+:host .player {
   width: 16px;
   height: 16px;
   position: absolute;
-  bottom: 0;
+  bottom: 16px;
   left: 0;
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZUlEQVQ4jdWTOw7AIAxDff9Lu0tpY2OqsFFLSOTjBxkCAFydoa8enAtw/QTABoAdwEoR4K+K/zbUcPqNEoM5QBRQiTRAulv/A9iVAEK1l3MAwswCCKPirUMAvgs1L7Vq3l0mkrwAzXM74XY1VL4AAAAASUVORK5CYII=);
 }
 
-:host .player-2-projectile {
+:host .enemy {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  top: 16px;
+  left: 0;
+}
+
+:host .player-projectile {
   width: 16px;
   height: 16px;
   position: absolute;

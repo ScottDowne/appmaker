@@ -1,4 +1,4 @@
-<polymer-element name="ceci-space-adventure" extends="ceci-element" attributes="playerTwoMoveSpeed playerTwoProjectileSpeed playerTwoProjectileRate" playerTwoProjectileSpeed="1"playerTwoMoveSpeed="1" playerTwoProjectileRate="1">
+<polymer-element name="ceci-space-adventure" extends="ceci-element" attributes="playerMoveSpeed playerProjectileSpeed enemyProjectileSpeed playerProjectileRate enemyProjectileRate" playerProjectileSpeed="1" enemyProjectileSpeed="1" playerMoveSpeed="1" playerProjectileRate="1" enemyProjectileRate="1">
   <ceci-definition>
     {
       "name": "Space Adventure",
@@ -15,29 +15,43 @@
         }
       },
       "listeners": {
-        "playerTwoAction": {
-          "description": "Move player two right or left",
-          "label": ""
+        "playerActionStart": {
+          "description": "Move player right or left",
+          "label": "Player Action Start"
         },
-        "playerTwoStop": {
-          "description": "Stop player two movement.",
-          "label": ""
+        "playerActionStop": {
+          "description": "Stop player movement.",
+          "label": "Player Action Stop"
+        },
+        "createEnemy": {
+          "description": "Adds an enemy ship to the game.",
+          "label": "Create Enemy"
         }
       },
       "attributes": {
-        "playerTwoMoveSpeed": {
+        "playerMoveSpeed": {
           "description": "",
-          "label": "Player Two Move Speed",
+          "label": "Player Move Speed",
           "editable": "number"
         },
-        "playerTwoProjectileSpeed": {
+        "playerProjectileSpeed": {
           "description": "",
-          "label": "Player Two Projectile Speed",
+          "label": "Player Projectile Speed",
           "editable": "number"
         },
-        "playerTwoProjectileRate": {
+        "enemyProjectileSpeed": {
           "description": "",
-          "label": "Player Two Projectile Rate",
+          "label": "Enemy Projectile Speed",
+          "editable": "number"
+        },
+        "playerProjectileRate": {
+          "description": "",
+          "label": "Player Projectile Rate",
+          "editable": "number"
+        },
+        "enemyProjectileRate": {
+          "description": "",
+          "label": "Enemy Projectile Rate",
           "editable": "number"
         }
       }
@@ -46,30 +60,31 @@
   <template>
     <link rel="stylesheet" href="component.css"></link>
     <div class="game-board">
-      <div class="player-2"></div>
+      <div class="player"></div>
     </div>
     <shadow></shadow>
   </template>
     <script>
       Polymer("ceci-space-adventure", {
+        enemies: [],
         ready: function() {
           this.super();
           window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
                                          window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-          this.playerTwoPosition = 0;
-          this.playerTwoMoving = false;
+          this.playerPosition = 0;
+          this.playerMoving = false;
         },
-        playerTwoAnimateProjectile: function() {
+        playerAnimateProjectile: function() {
           var playerProjectile = document.createElement("div");
           var that = this;
           playerProjectile.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVQ4jWNgYGD4TyEeNWCYGPD/PyrGpRiHOpgADBAyAEMd1QygxAtLUTFOA7CrY/j/Hw3jNAC7OlRJQtGGRR1lBgAABrNj2GoxiV8AAAAASUVORK5CYII=)";
-          playerProjectile.style.left = that.playerTwoPosition + "px";
+          playerProjectile.style.left = that.playerPosition + "px";
           playerProjectile.style.bottom = "16px";
-          playerProjectile.classList.add("player-2-projectile");
+          playerProjectile.classList.add("player-projectile");
           this.shadowRoot.querySelector(".game-board").appendChild(playerProjectile);
           function animateProjectile() {
             if (playerProjectile.offsetTop > 0) {
-              playerProjectile.style.top = ( playerProjectile.offsetTop - that.playerTwoProjectileSpeed ) + "px";
+              playerProjectile.style.top = ( playerProjectile.offsetTop - that.playerProjectileSpeed ) + "px";
               window.requestAnimationFrame(animateProjectile);
             } else {
               that.shadowRoot.querySelector(".game-board").removeChild(playerProjectile);
@@ -77,15 +92,15 @@
           }
           animateProjectile();
         },
-        playerTwoFire: function() {
-          this.playerTwoFiring = true;
+        playerFire: function() {
+          this.playerFiring = true;
           var timeStamp = 0;
           var that = this;
           function fireProjectile() {
-            if (that.playerTwoFiring) {
+            if (that.playerFiring) {
               var diff = Date.now()/1000 - timeStamp;
-              if (timstamp = 0 || diff >= that.playerTwoProjectileRate-0) {
-                that.playerTwoAnimateProjectile();
+              if (timstamp = 0 || diff >= that.playerProjectileRate-0) {
+                that.playerAnimateProjectile();
                 timeStamp = Date.now()/1000;
               }
 
@@ -94,41 +109,107 @@
           }
           fireProjectile();
         },
-        playerTwoAction: function(dir) {
-          var player = this.shadowRoot.querySelector(".player-2");
+        playerActionStart: function(dir) {
+          var player = this.shadowRoot.querySelector(".player");
           var that = this;
           if (dir === "a" || dir === "b") {
-            this.playerTwoFire();
+            this.playerFire();
             return;
           }
           if (dir === "left") {
-            this.playerTwoMovingLeft = true;
-            this.playerTwoMovingRight = false;
+            this.playerMovingLeft = true;
+            this.playerMovingRight = false;
             function moveLeft() {
-              if (that.playerTwoMovingLeft && that.playerTwoPosition>0) {
-                that.playerTwoPosition-=(that.playerTwoMoveSpeed-0);
-                player.style.left = that.playerTwoPosition + "px";
+              if (that.playerMovingLeft && that.playerPosition>0) {
+                that.playerPosition-=(that.playerMoveSpeed-0);
+                player.style.left = that.playerPosition + "px";
                 window.requestAnimationFrame(moveLeft);
               }
             }
             moveLeft();
           } else {
-            this.playerTwoMovingLeft = false;
-            this.playerTwoMovingRight = true;
+            this.playerMovingLeft = false;
+            this.playerMovingRight = true;
             function moveRight() {
-              if (that.playerTwoMovingRight && that.playerTwoPosition<295) {
-                that.playerTwoPosition+=(that.playerTwoMoveSpeed-0);
-                player.style.left = that.playerTwoPosition + "px";
+              if (that.playerMovingRight && that.playerPosition<295) {
+                that.playerPosition+=(that.playerMoveSpeed-0);
+                player.style.left = that.playerPosition + "px";
                 window.requestAnimationFrame(moveRight);
               }
             }
             moveRight();
           }
         },
-        playerTwoStop: function() {
-          this.playerTwoMovingLeft = false;
-          this.playerTwoMovingRight = false;
-          this.playerTwoFiring = false;
+        playerActionStop: function() {
+          this.playerMovingLeft = false;
+          this.playerMovingRight = false;
+          this.playerFiring = false;
+        },
+        createEnemy: function() {
+          var that = this;
+          var enemyElement = document.createElement("div");
+          var enemy = {
+            element: enemyElement,
+            alive: true,
+            left: 0
+          };
+          var direction = "right";
+          enemyElement.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAb0lEQVQ4jc2TwQ3AMAgD2X+X7tMJuob7aSJw7LZSHsnDnwAng5WICExqB8BxXl25iEf5TfRqAEi/Aa0AVLm+cGTlwKyq7THA3WlIoQNoBTOsY+ThfIdPQLHfhtMar4CSAANQewaAojvrNoV1f2FGN8g2pF6X9BjjAAAAAElFTkSuQmCC)";
+          enemyElement.style.left = "0";
+          enemyElement.style.top = "16px";
+          enemyElement.classList.add("enemy");
+          this.shadowRoot.querySelector(".game-board").appendChild(enemyElement);
+          this.enemies.push(enemy);
+          var timeStamp = 0;
+          function animateEnemyProjectile() {
+console.log("starting animating");
+            var enemyProjectile = document.createElement("div");
+            enemyProjectile.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVQ4jWNgYGD4TyEeNWCYGPD/PyrGpRiHOpgADBAyAEMd1QygxAtLUTFOA7CrY/j/Hw3jNAC7OlRJQtGGRR1lBgAABrNj2GoxiV8AAAAASUVORK5CYII=)";
+            enemyProjectile.style.left = enemy.left + "px";
+            enemyProjectile.style.top = "16px";
+            enemyProjectile.classList.add("player-projectile");
+            that.shadowRoot.querySelector(".game-board").appendChild(enemyProjectile);
+            function animateProjectile() {
+              if (enemyProjectile.offsetTop < 295) {
+                enemyProjectile.style.top = ( enemyProjectile.offsetTop + (that.enemyProjectileSpeed-0) ) + "px";
+                window.requestAnimationFrame(animateProjectile);
+              } else {
+                that.shadowRoot.querySelector(".game-board").removeChild(enemyProjectile);
+              }
+            }
+            animateProjectile();
+          }
+          function fireProjectile() {
+            if (enemy.alive) {
+              var diff = Date.now()/1000 - timeStamp;
+              if (timstamp = 0 || diff >= that.enemyProjectileRate-0) {
+                animateEnemyProjectile();
+                timeStamp = Date.now()/1000;
+              }
+
+              window.requestAnimationFrame(fireProjectile);
+            }
+          }
+          function enemyAI() {
+            if (enemy.alive) {
+              if (direction === "right") {
+                if (enemy.left + 1 === 295) {
+                  direction = "left";
+                }
+                enemy.left++;
+                enemyElement.style.left = enemy.left + "px";
+              } else {
+                if (enemy.left - 1 === 0) {
+                  direction = "right";
+                }
+                enemy.left--;
+                enemyElement.style.left = enemy.left + "px";
+              }
+              window.requestAnimationFrame(enemyAI);
+            }
+          }
+          enemyAI();
+          fireProjectile();
         }
       });
     </script>
