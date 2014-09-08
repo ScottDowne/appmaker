@@ -5,13 +5,10 @@
       "thumbnail": "",
       "description": "",
       "broadcasts": {
-        "data": {
+        "playerHit": {
           "label": "",
-          "description": ""
-        },
-        "send": {
-          "label": "",
-          "description": ""
+          "description": "A player was hit by an enemy projectile.",
+          "labe": "Player Hit"
         }
       },
       "listeners": {
@@ -26,47 +23,59 @@
         "createEnemy": {
           "description": "Adds an enemy ship to the game.",
           "label": "Create Enemy"
+        },
+        "createPlayer": {
+          "description": "Adds a player ship to the game.",
+          "label": "Create Player"
+        },
+        "killPlayer": {
+          "description": "Removes a player ship from the game.",
+          "label": "Kill Player"
         }
       },
       "attributes": {
         "playerMoveSpeed": {
           "description": "",
           "label": "Player Move Speed",
-          "editable": "number"
+          "editable": "number",
+          "step" : ".1"
         },
         "playerProjectileSpeed": {
           "description": "",
           "label": "Player Projectile Speed",
-          "editable": "number"
+          "editable": "number",
+          "step" : ".1"
         },
         "enemyProjectileSpeed": {
           "description": "",
           "label": "Enemy Projectile Speed",
-          "editable": "number"
+          "editable": "number",
+          "step" : ".1"
         },
         "playerProjectileRate": {
           "description": "",
           "label": "Player Projectile Rate",
-          "editable": "number"
+          "editable": "number",
+          "step" : ".1"
         },
         "enemyProjectileRate": {
           "description": "",
           "label": "Enemy Projectile Rate",
-          "editable": "number"
+          "editable": "number",
+          "step" : ".1"
         }
       }
     }
   </ceci-definition>
   <template>
     <link rel="stylesheet" href="component.css"></link>
-    <div class="game-board">
-      <div class="player"></div>
-    </div>
+    <div class="game-board"></div>
     <shadow></shadow>
   </template>
     <script>
       Polymer("ceci-space-adventure", {
         enemies: [],
+        playerAlive: false,
         ready: function() {
           this.super();
           window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
@@ -85,6 +94,7 @@
           function animateProjectile() {
             if (playerProjectile.offsetTop > 0) {
               playerProjectile.style.top = ( playerProjectile.offsetTop - that.playerProjectileSpeed ) + "px";
+              // Need these to update on a timer, and not based on the animation frame speed.
               window.requestAnimationFrame(animateProjectile);
             } else {
               that.shadowRoot.querySelector(".game-board").removeChild(playerProjectile);
@@ -109,7 +119,16 @@
           }
           fireProjectile();
         },
+        createPlayer: function() {
+          var player = document.createElement("div");
+          player.classList.add("player");
+          this.shadowRoot.querySelector(".game-board").appendChild(player);
+          this.playerAlive = true;
+        },
         playerActionStart: function(dir) {
+          if (!this.playerAlive) {
+            return;
+          }
           var player = this.shadowRoot.querySelector(".player");
           var that = this;
           if (dir === "a" || dir === "b") {
@@ -123,6 +142,7 @@
               if (that.playerMovingLeft && that.playerPosition>0) {
                 that.playerPosition-=(that.playerMoveSpeed-0);
                 player.style.left = that.playerPosition + "px";
+                // Need these to update on a timer, and not based on the animation frame speed.
                 window.requestAnimationFrame(moveLeft);
               }
             }
@@ -134,6 +154,7 @@
               if (that.playerMovingRight && that.playerPosition<295) {
                 that.playerPosition+=(that.playerMoveSpeed-0);
                 player.style.left = that.playerPosition + "px";
+                // Need these to update on a timer, and not based on the animation frame speed.
                 window.requestAnimationFrame(moveRight);
               }
             }
@@ -144,6 +165,13 @@
           this.playerMovingLeft = false;
           this.playerMovingRight = false;
           this.playerFiring = false;
+        },
+        killPlayer: function() {
+          this.playerAlive = false;
+          var player = this.shadowRoot.querySelector(".player");
+          if (player) {
+            this.shadowRoot.querySelector(".game-board").removeChild(player);
+          }
         },
         createEnemy: function() {
           var that = this;
@@ -170,9 +198,16 @@ console.log("starting animating");
             enemyProjectile.classList.add("player-projectile");
             that.shadowRoot.querySelector(".game-board").appendChild(enemyProjectile);
             function animateProjectile() {
+              // Need these to update on a timer, and not based on the animation frame speed.
               if (enemyProjectile.offsetTop < 295) {
                 enemyProjectile.style.top = ( enemyProjectile.offsetTop + (that.enemyProjectileSpeed-0) ) + "px";
                 window.requestAnimationFrame(animateProjectile);
+                if (enemyProjectile.offsetTop >= 263) {
+                  if ((enemyProjectile.offsetLeft + 16) >= that.playerPosition && enemyProjectile.offsetLeft <= (that.playerPosition + 16) ) {
+                    that.shadowRoot.querySelector(".game-board").removeChild(enemyProjectile);
+                    that.broadcast("playerHit");
+                  }
+                }
               } else {
                 that.shadowRoot.querySelector(".game-board").removeChild(enemyProjectile);
               }
@@ -205,6 +240,7 @@ console.log("starting animating");
                 enemy.left--;
                 enemyElement.style.left = enemy.left + "px";
               }
+              // Need these to update on a timer, and not based on the animation frame speed.
               window.requestAnimationFrame(enemyAI);
             }
           }
