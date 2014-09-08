@@ -9,6 +9,11 @@
           "label": "",
           "description": "A player was hit by an enemy projectile.",
           "labe": "Player Hit"
+        },
+        "enemyHit": {
+          "label": "",
+          "description": "An enemy was hit by a player projectile.",
+          "labe": "Enemy Hit"
         }
       },
       "listeners": {
@@ -31,6 +36,10 @@
         "killPlayer": {
           "description": "Removes a player ship from the game.",
           "label": "Kill Player"
+        },
+        "killEnemy": {
+          "description": "Removes an enemy ship from the game.",
+          "label": "Kill Enemy"
         }
       },
       "attributes": {
@@ -86,6 +95,7 @@
         playerAnimateProjectile: function() {
           var playerProjectile = document.createElement("div");
           var that = this;
+          var hitSomething = false;
           playerProjectile.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVQ4jWNgYGD4TyEeNWCYGPD/PyrGpRiHOpgADBAyAEMd1QygxAtLUTFOA7CrY/j/Hw3jNAC7OlRJQtGGRR1lBgAABrNj2GoxiV8AAAAASUVORK5CYII=)";
           playerProjectile.style.left = that.playerPosition + "px";
           playerProjectile.style.bottom = "16px";
@@ -96,6 +106,15 @@
               playerProjectile.style.top = ( playerProjectile.offsetTop - that.playerProjectileSpeed ) + "px";
               // Need these to update on a timer, and not based on the animation frame speed.
               window.requestAnimationFrame(animateProjectile);
+              if (!hitSomething && playerProjectile.offsetTop >= 32) {
+                for (var i = 0; i < that.enemies.length; i++) {
+                  if (that.enemies[i].alive && (playerProjectile.offsetLeft + 16) >= that.enemies[i].left && playerProjectile.offsetLeft <= (that.enemies[i].left + 16)) {
+                    that.broadcast("enemyHit", i.toString());
+                    hitSomething = true;
+                    break;
+                  }
+                }
+              }
             } else {
               that.shadowRoot.querySelector(".game-board").removeChild(playerProjectile);
             }
@@ -169,9 +188,21 @@
         killPlayer: function() {
           this.playerAlive = false;
           var player = this.shadowRoot.querySelector(".player");
+          this.playerPosition = 0;
           if (player) {
             this.shadowRoot.querySelector(".game-board").removeChild(player);
           }
+        },
+        killEnemy: function(value) {
+          var enemy = this.enemies[value];
+console.log(enemy);
+          if (!enemy) {
+            return;
+          }
+          enemy.alive = false;
+          
+          this.shadowRoot.querySelector(".game-board").removeChild(enemy.element);
+          this.enemies.splice(value, 1);
         },
         createEnemy: function() {
           var that = this;
@@ -190,7 +221,6 @@
           this.enemies.push(enemy);
           var timeStamp = 0;
           function animateEnemyProjectile() {
-console.log("starting animating");
             var enemyProjectile = document.createElement("div");
             enemyProjectile.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVQ4jWNgYGD4TyEeNWCYGPD/PyrGpRiHOpgADBAyAEMd1QygxAtLUTFOA7CrY/j/Hw3jNAC7OlRJQtGGRR1lBgAABrNj2GoxiV8AAAAASUVORK5CYII=)";
             enemyProjectile.style.left = enemy.left + "px";
@@ -202,9 +232,8 @@ console.log("starting animating");
               if (enemyProjectile.offsetTop < 295) {
                 enemyProjectile.style.top = ( enemyProjectile.offsetTop + (that.enemyProjectileSpeed-0) ) + "px";
                 window.requestAnimationFrame(animateProjectile);
-                if (enemyProjectile.offsetTop >= 263) {
+                if (that.playerAlive && enemyProjectile.offsetTop >= 263) {
                   if ((enemyProjectile.offsetLeft + 16) >= that.playerPosition && enemyProjectile.offsetLeft <= (that.playerPosition + 16) ) {
-                    that.shadowRoot.querySelector(".game-board").removeChild(enemyProjectile);
                     that.broadcast("playerHit");
                   }
                 }
