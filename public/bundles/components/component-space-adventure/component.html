@@ -97,18 +97,21 @@
           var that = this;
           var hitSomething = false;
           playerProjectile.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVQ4jWNgYGD4TyEeNWCYGPD/PyrGpRiHOpgADBAyAEMd1QygxAtLUTFOA7CrY/j/Hw3jNAC7OlRJQtGGRR1lBgAABrNj2GoxiV8AAAAASUVORK5CYII=)";
-          playerProjectile.style.left = that.playerPosition + "px";
-          playerProjectile.style.bottom = "16px";
-          playerProjectile.classList.add("player-projectile");
+          var left = that.playerPosition;
+          var top = 278;
+          playerProjectile.style.transform = "translate(" + left + "px, " + top + "px)";
+          playerProjectile.classList.add("sprite");
           this.shadowRoot.querySelector(".game-board").appendChild(playerProjectile);
           function animateProjectile() {
-            if (playerProjectile.offsetTop > 0) {
-              playerProjectile.style.top = ( playerProjectile.offsetTop - that.playerProjectileSpeed ) + "px";
+            if (top > 0) {
+              top += playerProjectile.offsetTop - that.playerProjectileSpeed;
+              playerProjectile.style.transform = "translate(" + left + "px, " + top + "px)";
+
               // Need these to update on a timer, and not based on the animation frame speed.
               window.requestAnimationFrame(animateProjectile);
-              if (!hitSomething && playerProjectile.offsetTop >= 32) {
+              if (!hitSomething && top >= 32) {
                 for (var i = 0; i < that.enemies.length; i++) {
-                  if (that.enemies[i].alive && (playerProjectile.offsetLeft + 16) >= that.enemies[i].left && playerProjectile.offsetLeft <= (that.enemies[i].left + 16)) {
+                  if (that.enemies[i].alive && (left + 16) >= that.enemies[i].left && left <= (that.enemies[i].left + 16)) {
                     that.broadcast("enemyHit", i.toString());
                     hitSomething = true;
                     break;
@@ -141,6 +144,8 @@
         createPlayer: function() {
           var player = document.createElement("div");
           player.classList.add("player");
+          player.classList.add("sprite");
+          player.style.transform = "translate(0px, 278px)";
           this.shadowRoot.querySelector(".game-board").appendChild(player);
           this.playerAlive = true;
         },
@@ -160,7 +165,7 @@
             function moveLeft() {
               if (that.playerMovingLeft && that.playerPosition>0) {
                 that.playerPosition-=(that.playerMoveSpeed-0);
-                player.style.left = that.playerPosition + "px";
+                player.style.transform = "translate(" + that.playerPosition + "px, 278px)";
                 // Need these to update on a timer, and not based on the animation frame speed.
                 window.requestAnimationFrame(moveLeft);
               }
@@ -172,7 +177,7 @@
             function moveRight() {
               if (that.playerMovingRight && that.playerPosition<295) {
                 that.playerPosition+=(that.playerMoveSpeed-0);
-                player.style.left = that.playerPosition + "px";
+                player.style.transform = "translate(" + that.playerPosition + "px, 278px)";
                 // Need these to update on a timer, and not based on the animation frame speed.
                 window.requestAnimationFrame(moveRight);
               }
@@ -195,7 +200,6 @@
         },
         killEnemy: function(value) {
           var enemy = this.enemies[value];
-console.log(enemy);
           if (!enemy) {
             return;
           }
@@ -214,26 +218,29 @@ console.log(enemy);
           };
           var direction = "right";
           enemyElement.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAb0lEQVQ4jc2TwQ3AMAgD2X+X7tMJuob7aSJw7LZSHsnDnwAng5WICExqB8BxXl25iEf5TfRqAEi/Aa0AVLm+cGTlwKyq7THA3WlIoQNoBTOsY+ThfIdPQLHfhtMar4CSAANQewaAojvrNoV1f2FGN8g2pF6X9BjjAAAAAElFTkSuQmCC)";
-          enemyElement.style.left = "0";
-          enemyElement.style.top = "16px";
-          enemyElement.classList.add("enemy");
+          enemyElement.classList.add("sprite");
           this.shadowRoot.querySelector(".game-board").appendChild(enemyElement);
           this.enemies.push(enemy);
           var timeStamp = 0;
           function animateEnemyProjectile() {
             var enemyProjectile = document.createElement("div");
             enemyProjectile.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVQ4jWNgYGD4TyEeNWCYGPD/PyrGpRiHOpgADBAyAEMd1QygxAtLUTFOA7CrY/j/Hw3jNAC7OlRJQtGGRR1lBgAABrNj2GoxiV8AAAAASUVORK5CYII=)";
-            enemyProjectile.style.left = enemy.left + "px";
-            enemyProjectile.style.top = "16px";
-            enemyProjectile.classList.add("player-projectile");
+            var left = enemy.left;
+            var top = 16;
+            var hitSomething = false;
+            enemyProjectile.style.transform = "translate(" + left + "px, " + top + "px)";
+            enemyProjectile.classList.add("sprite");
             that.shadowRoot.querySelector(".game-board").appendChild(enemyProjectile);
             function animateProjectile() {
               // Need these to update on a timer, and not based on the animation frame speed.
-              if (enemyProjectile.offsetTop < 295) {
-                enemyProjectile.style.top = ( enemyProjectile.offsetTop + (that.enemyProjectileSpeed-0) ) + "px";
+              if (top < 295) {
+                // this speed thing is so rubbish
+                top += (that.enemyProjectileSpeed-0);
+                enemyProjectile.style.transform = "translate(" + left + "px, " + top + "px)";
                 window.requestAnimationFrame(animateProjectile);
-                if (that.playerAlive && enemyProjectile.offsetTop >= 263) {
-                  if ((enemyProjectile.offsetLeft + 16) >= that.playerPosition && enemyProjectile.offsetLeft <= (that.playerPosition + 16) ) {
+                if (!hitSomething && top >= 263) {
+                  if ((left + 16) >= that.playerPosition && left <= (that.playerPosition + 16) ) {
+                    hitSomething = true;
                     that.broadcast("playerHit");
                   }
                 }
@@ -261,13 +268,13 @@ console.log(enemy);
                   direction = "left";
                 }
                 enemy.left++;
-                enemyElement.style.left = enemy.left + "px";
+                enemyElement.style.transform = "translate(" + enemy.left + "px, 16px)";
               } else {
                 if (enemy.left - 1 === 0) {
                   direction = "right";
                 }
                 enemy.left--;
-                enemyElement.style.left = enemy.left + "px";
+                enemyElement.style.transform = "translate(" + enemy.left + "px, 16px)";
               }
               // Need these to update on a timer, and not based on the animation frame speed.
               window.requestAnimationFrame(enemyAI);
