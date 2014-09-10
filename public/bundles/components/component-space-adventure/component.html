@@ -89,7 +89,12 @@
           this.super();
           window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
                                          window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-          this.playerPosition = 0;
+          this.player = {
+            position: {
+              left: 0,
+              top: 278
+            }
+          };
           this.playerMoving = false;
         },
         playerAnimateProjectile: function() {
@@ -97,8 +102,8 @@
           var that = this;
           var hitSomething = false;
           playerProjectile.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVQ4jWNgYGD4TyEeNWCYGPD/PyrGpRiHOpgADBAyAEMd1QygxAtLUTFOA7CrY/j/Hw3jNAC7OlRJQtGGRR1lBgAABrNj2GoxiV8AAAAASUVORK5CYII=)";
-          var left = that.playerPosition;
-          var top = 278;
+          var left = that.player.position.left;
+          var top = that.player.position.top;
           playerProjectile.style.transform = "translate(" + left + "px, " + top + "px)";
           playerProjectile.classList.add("sprite");
           this.shadowRoot.querySelector(".game-board").appendChild(playerProjectile);
@@ -159,13 +164,14 @@
             this.playerFire();
             return;
           }
+          timeStamp = Date.now()/1000;
           if (dir === "left") {
             this.playerMovingLeft = true;
             this.playerMovingRight = false;
             function moveLeft() {
-              if (that.playerMovingLeft && that.playerPosition>0) {
-                that.playerPosition-=(that.playerMoveSpeed-0);
-                player.style.transform = "translate(" + that.playerPosition + "px, 278px)";
+              if (that.playerMovingLeft && that.player.position.left > 0) {
+                that.player.position.left-=(that.playerMoveSpeed-0);
+                player.style.transform = "translate(" + that.player.position.left + "px, 278px)";
                 // Need these to update on a timer, and not based on the animation frame speed.
                 window.requestAnimationFrame(moveLeft);
               }
@@ -175,9 +181,19 @@
             this.playerMovingLeft = false;
             this.playerMovingRight = true;
             function moveRight() {
-              if (that.playerMovingRight && that.playerPosition<295) {
-                that.playerPosition+=(that.playerMoveSpeed-0);
-                player.style.transform = "translate(" + that.playerPosition + "px, 278px)";
+              if (that.playerMovingRight) {
+                var diff = Date.now()/1000 - timeStamp;
+                var speed = (that.playerMoveSpeed-0);
+                var step = diff / speed;
+                var newLeft = that.player.position.left+step;
+                if (newLeft>310 - 16) {
+                  newLeft = 310 - 16;
+                }
+                if (step >= 1) {
+                  that.player.position.left = newLeft;
+                  player.style.transform = "translate(" + that.player.position.left + "px, 278px)";
+                  timeStamp = Date.now()/1000;
+                }
                 // Need these to update on a timer, and not based on the animation frame speed.
                 window.requestAnimationFrame(moveRight);
               }
@@ -193,7 +209,7 @@
         killPlayer: function() {
           this.playerAlive = false;
           var player = this.shadowRoot.querySelector(".player");
-          this.playerPosition = 0;
+          this.player.position.left = 0;
           if (player) {
             this.shadowRoot.querySelector(".game-board").removeChild(player);
           }
@@ -239,7 +255,7 @@
                 enemyProjectile.style.transform = "translate(" + left + "px, " + top + "px)";
                 window.requestAnimationFrame(animateProjectile);
                 if (!hitSomething && top >= 263) {
-                  if ((left + 16) >= that.playerPosition && left <= (that.playerPosition + 16) ) {
+                  if ((left + 16) >= that.player.position.left && left <= (that.player.position.left + 16) ) {
                     hitSomething = true;
                     that.broadcast("playerHit");
                   }
