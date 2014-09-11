@@ -46,8 +46,9 @@
         "playerMoveSpeed": {
           "description": "",
           "label": "Player Move Speed",
-          "editable": "number",
-          "step" : ".1"
+          "editable": "select",
+          "options": ["Fastest", "Fast", "Normal", "Slow", "Slowest"],
+          "values": ["0.25", "0.5", "0.75", "1", "1.25"]
         },
         "playerProjectileSpeed": {
           "description": "",
@@ -169,10 +170,19 @@
             this.playerMovingLeft = true;
             this.playerMovingRight = false;
             function moveLeft() {
-              if (that.playerMovingLeft && that.player.position.left > 0) {
-                that.player.position.left-=(that.playerMoveSpeed-0);
-                player.style.transform = "translate(" + that.player.position.left + "px, 278px)";
-                // Need these to update on a timer, and not based on the animation frame speed.
+              if (that.playerMovingLeft) {
+                var diff = Date.now()/1000 - timeStamp;
+                var speed = (that.playerMoveSpeed-0)/100;
+                var step = diff / speed;
+                var newLeft = that.player.position.left-step;
+                if (newLeft<0) {
+                  newLeft = 0;
+                }
+                if (step >= 1) {
+                  that.player.position.left = newLeft;
+                  player.style.transform = "translate(" + that.player.position.left + "px, 278px)";
+                  timeStamp = Date.now()/1000;
+                }
                 window.requestAnimationFrame(moveLeft);
               }
             }
@@ -183,7 +193,7 @@
             function moveRight() {
               if (that.playerMovingRight) {
                 var diff = Date.now()/1000 - timeStamp;
-                var speed = (that.playerMoveSpeed-0);
+                var speed = (that.playerMoveSpeed-0)/100;
                 var step = diff / speed;
                 var newLeft = that.player.position.left+step;
                 if (newLeft>310 - 16) {
@@ -194,7 +204,6 @@
                   player.style.transform = "translate(" + that.player.position.left + "px, 278px)";
                   timeStamp = Date.now()/1000;
                 }
-                // Need these to update on a timer, and not based on the animation frame speed.
                 window.requestAnimationFrame(moveRight);
               }
             }
@@ -254,7 +263,7 @@
                 top += (that.enemyProjectileSpeed-0);
                 enemyProjectile.style.transform = "translate(" + left + "px, " + top + "px)";
                 window.requestAnimationFrame(animateProjectile);
-                if (!hitSomething && top >= 263) {
+                if (that.playerAlive && !hitSomething && top >= 263) {
                   if ((left + 16) >= that.player.position.left && left <= (that.player.position.left + 16) ) {
                     hitSomething = true;
                     that.broadcast("playerHit");
