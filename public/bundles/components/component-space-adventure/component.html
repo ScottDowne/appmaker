@@ -47,8 +47,7 @@
           "description": "",
           "label": "Player Move Speed",
           "editable": "select",
-          "options": ["Fastest", "Fast", "Normal", "Slow", "Slowest"],
-          "values": ["0.25", "0.5", "0.75", "1", "1.25"]
+          "options": {"Fastest": "0.25", "Fast": "0.5", "Normal": "0.75", "Slow": "1", "Slowest": "1.25"}
         },
         "playerProjectileSpeed": {
           "description": "",
@@ -86,7 +85,7 @@
       Polymer("ceci-space-adventure", {
         enemies: [],
         playerAlive: false,
-        ready: function() {
+        attached: function() {
           this.super();
           window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
                                          window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -94,9 +93,49 @@
             position: {
               left: 0,
               top: 278
-            }
+            },
+            speed: (this.playerMoveSpeed-0)/100
           };
-          this.playerMoving = false;
+
+          var diff;
+          var step;
+          var newLeft;
+          var that = this;
+          var dateNow;
+          var width = 310 - 16;
+
+          function updatePlayer() {
+            dateNow = Date.now()/1000;
+            diff = dateNow - that.player.timeStamp;
+            step = diff / that.player.speed;
+            if (that.playerMovingLeft) {
+              newLeft = that.player.position.left-step;
+              if (newLeft<0) {
+                newLeft = 0;
+              }
+            } else {
+              newLeft = that.player.position.left+step;
+              if (newLeft>width) {
+                newLeft = width;
+              }
+            }
+            that.player.position.left = newLeft;
+            that.player.element.style.transform = "translate(" + newLeft + "px, 278px)";
+            that.player.timeStamp = dateNow;
+          }
+
+          this.updatePlayer = updatePlayer;
+
+          function update() {
+            if (that.playerMovingRight || that.playerMovingLeft) {
+              updatePlayer();
+            }
+            window.requestAnimationFrame(update);
+          }
+          update();
+        },
+        playerMoveSpeedChanged: function() {
+          this.player.speed = (this.playerMoveSpeed-0)/100;
         },
         playerAnimateProjectile: function() {
           var playerProjectile = document.createElement("div");
@@ -152,6 +191,7 @@
           player.classList.add("player");
           player.classList.add("sprite");
           player.style.transform = "translate(0px, 278px)";
+          this.player.element = player;
           this.shadowRoot.querySelector(".game-board").appendChild(player);
           this.playerAlive = true;
         },
@@ -159,61 +199,29 @@
           if (!this.playerAlive) {
             return;
           }
-          var player = this.shadowRoot.querySelector(".player");
-          var that = this;
           if (dir === "a" || dir === "b") {
             this.playerFire();
             return;
           }
-          timeStamp = Date.now()/1000;
+
           if (dir === "left") {
             this.playerMovingLeft = true;
             this.playerMovingRight = false;
-            function moveLeft() {
-              if (that.playerMovingLeft) {
-                var diff = Date.now()/1000 - timeStamp;
-                var speed = (that.playerMoveSpeed-0)/100;
-                var step = diff / speed;
-                var newLeft = that.player.position.left-step;
-                if (newLeft<0) {
-                  newLeft = 0;
-                }
-                if (step >= 1) {
-                  that.player.position.left = newLeft;
-                  player.style.transform = "translate(" + that.player.position.left + "px, 278px)";
-                  timeStamp = Date.now()/1000;
-                }
-                window.requestAnimationFrame(moveLeft);
-              }
-            }
-            moveLeft();
+            this.player.timeStamp = Date.now()/1000;
+            this.updatePlayer();
           } else {
             this.playerMovingLeft = false;
             this.playerMovingRight = true;
-            function moveRight() {
-              if (that.playerMovingRight) {
-                var diff = Date.now()/1000 - timeStamp;
-                var speed = (that.playerMoveSpeed-0)/100;
-                var step = diff / speed;
-                var newLeft = that.player.position.left+step;
-                if (newLeft>310 - 16) {
-                  newLeft = 310 - 16;
-                }
-                if (step >= 1) {
-                  that.player.position.left = newLeft;
-                  player.style.transform = "translate(" + that.player.position.left + "px, 278px)";
-                  timeStamp = Date.now()/1000;
-                }
-                window.requestAnimationFrame(moveRight);
-              }
-            }
-            moveRight();
+            this.player.timeStamp = Date.now()/1000;
+            this.updatePlayer();
           }
         },
         playerActionStop: function() {
-          this.playerMovingLeft = false;
-          this.playerMovingRight = false;
-          this.playerFiring = false;
+          var that = this;
+          that.playerMovingLeft = false;
+          that.playerMovingRight = false;
+          that.playerFiring = false;
+          that.player.timeStamp = 0;
         },
         killPlayer: function() {
           this.playerAlive = false;
