@@ -1,4 +1,4 @@
-<polymer-element name="ceci-space-adventure" extends="ceci-element" attributes="playerMoveSpeed playerProjectileSpeed enemyProjectileSpeed playerProjectileRate enemyProjectileRate" playerProjectileSpeed="1" enemyProjectileSpeed="1" playerMoveSpeed="1" playerProjectileRate="1" enemyProjectileRate="1">
+<polymer-element name="ceci-space-adventure" extends="ceci-element" attributes="playerMoveSpeed playerProjectileSpeed enemyProjectileSpeed playerProjectileRate enemyProjectileRate enemyMoveSpeed" playerProjectileSpeed="0.75" enemyProjectileSpeed="0.75" playerMoveSpeed="0.75" enemyMoveSpeed="0.75"  playerProjectileRate="1" enemyProjectileRate="1">
   <ceci-definition>
     {
       "name": "Space Adventure",
@@ -49,17 +49,23 @@
           "editable": "select",
           "options": {"Fastest": "0.25", "Fast": "0.5", "Normal": "0.75", "Slow": "1", "Slowest": "1.25"}
         },
+        "enemyMoveSpeed": {
+          "description": "",
+          "label": "Enemy Move Speed",
+          "editable": "select",
+          "options": {"Fastest": "0.25", "Fast": "0.5", "Normal": "0.75", "Slow": "1", "Slowest": "1.25"}
+        },
         "playerProjectileSpeed": {
           "description": "",
           "label": "Player Projectile Speed",
-          "editable": "number",
-          "step" : ".1"
+          "editable": "select",
+          "options": {"Fastest": "0.25", "Fast": "0.5", "Normal": "0.75", "Slow": "1", "Slowest": "1.25"}
         },
         "enemyProjectileSpeed": {
           "description": "",
           "label": "Enemy Projectile Speed",
-          "editable": "number",
-          "step" : ".1"
+          "editable": "select",
+          "options": {"Fastest": "0.25", "Fast": "0.5", "Normal": "0.75", "Slow": "1", "Slowest": "1.25"}
         },
         "playerProjectileRate": {
           "description": "",
@@ -83,9 +89,8 @@
   </template>
     <script>
       Polymer("ceci-space-adventure", {
-        enemies: [],
         playerAlive: false,
-        attached: function() {
+        ready: function() {
           this.super();
           window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
                                          window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -97,16 +102,34 @@
             speed: (this.playerMoveSpeed-0)/100
           };
 
+          this.enemies = {
+            all: [],
+            speed: (this.enemyMoveSpeed-0)/100
+          };
+
+          this.playerProjectiles = {
+            all: [],
+            speed: (this.playerProjectileSpeed-0)/100
+          };
+
+          this.enemyProjectiles = {
+            all: [],
+            speed: (this.enemyProjectileSpeed-0)/100
+          };
+        },
+        attached: function() {
+          this.super();
+
           var diff;
           var step;
           var newLeft;
           var that = this;
-          var dateNow;
           var width = 310 - 16;
+          var timestamp;
+          this.fireTimestamp;
 
           function updatePlayer() {
-            dateNow = Date.now()/1000;
-            diff = dateNow - that.player.timeStamp;
+            diff = (Date.now()/1000) - timeStamp;
             step = diff / that.player.speed;
             if (that.playerMovingLeft) {
               newLeft = that.player.position.left-step;
@@ -121,21 +144,176 @@
             }
             that.player.position.left = newLeft;
             that.player.element.style.transform = "translate(" + newLeft + "px, 278px)";
-            that.player.timeStamp = dateNow;
+          }
+
+          function updatePlayerProjectile(projectile, index) {
+            newTop = projectile.top-step;
+            if (newTop > 0) {
+              projectile.top = newTop;
+              projectile.element.style.transform = "translate(" + projectile.left + "px, " + projectile.top + "px)";
+
+              if (!projectile.hitSomething && projectile.top >= 32) {
+                that.enemies.all.forEach(function(enemy, index) {
+                  if (enemy.alive && (projectile.left + 16) >= enemy.left && projectile.left <= (enemy.left + 16)) {
+                    that.broadcast("enemyHit", index.toString());
+                    projectile.hitSomething = true;
+                  }
+                });
+              }
+
+            } else {
+              that.shadowRoot.querySelector(".game-board").removeChild(projectile.element);
+              that.playerProjectiles.all.splice(index, 1);
+            }
+          }
+
+          function updatePlayerProjectiles() {
+            diff = Date.now()/1000 - timeStamp;
+            step = diff / that.playerProjectiles.speed;
+            that.playerProjectiles.all.forEach(updatePlayerProjectile);
+          }
+
+          function updateEnemyProjectile(projectile, index) {
+// garbage collection no no
+            newTop = projectile.top+step;
+            if (newTop < 295) {
+              projectile.top = newTop;
+              projectile.element.style.transform = "translate(" + projectile.left + "px, " + projectile.top + "px)";
+              if (that.playerAlive && !projectile.hitSomething && projectile.top >= 263) {
+                if ((projectile.left + 16) >= that.player.position.left && projectile.left <= (that.player.position.left + 16) ) {
+                  projectile.hitSomething = true;
+                  that.broadcast("playerHit");
+                }
+              }
+            } else {
+              that.shadowRoot.querySelector(".game-board").removeChild(projectile.element);
+              that.enemyProjectiles.all.splice(index, 1);
+            }
+          }
+
+          function updateEnemyProjectiles() {
+            diff = Date.now()/1000 - timeStamp;
+            step = diff / that.enemyProjectiles.speed;
+            that.enemyProjectiles.all.forEach(updateEnemyProjectile);
+          }
+
+          function createEnemyProjectile(enemy) {
+            var projectileElement = document.createElement("div");
+            projectileElement.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVQ4jWNgYGD4TyEeNWCYGPD/PyrGpRiHOpgADBAyAEMd1QygxAtLUTFOA7CrY/j/Hw3jNAC7OlRJQtGGRR1lBgAABrNj2GoxiV8AAAAASUVORK5CYII=)";
+            var left = enemy.left;
+            var top = 16;
+            var projectile = {
+              element: projectileElement,
+              left: left,
+              top: top,
+              hitSomething: false
+            };
+            that.enemyProjectiles.all.push(projectile);
+            projectileElement.style.transform = "translate(" + left + "px, " + top + "px)";
+            projectileElement.classList.add("sprite");
+            that.shadowRoot.querySelector(".game-board").appendChild(projectileElement);
+          }
+
+          function createPlayerProjectile() {
+            var projectileElement = document.createElement("div");
+            projectileElement.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVQ4jWNgYGD4TyEeNWCYGPD/PyrGpRiHOpgADBAyAEMd1QygxAtLUTFOA7CrY/j/Hw3jNAC7OlRJQtGGRR1lBgAABrNj2GoxiV8AAAAASUVORK5CYII=)";
+            var left = that.player.position.left;
+            var top = that.player.position.top;
+            var projectile = {
+              element: projectileElement,
+              left: left,
+              top: top,
+              hitSomething: false
+            };
+            that.playerProjectiles.all.push(projectile);
+            projectileElement.style.transform = "translate(" + left + "px, " + top + "px)";
+            projectileElement.classList.add("sprite");
+            that.shadowRoot.querySelector(".game-board").appendChild(projectileElement);
+          }
+
+          function playerFire() {
+            diff = (Date.now()/1000) - that.fireTimestamp;
+            if (diff >= that.playerProjectileRate-0) {
+              createPlayerProjectile();
+// want the timer ticking even if fire is not being held, that way a fresh click fires, but holding it down or rapid fire still lock to the fire rate
+              that.fireTimestamp = Date.now()/1000;
+            }
+          }
+
+          function enemyFire(enemy) {
+            diff = (Date.now()/1000) - enemy.fireTimestamp;
+            if (diff >= that.enemyProjectileRate-0) {
+              createEnemyProjectile(enemy);
+// want the timer ticking even if fire is not being held, that way a fresh click fires, but holding it down or rapid fire still lock to the fire rate
+              enemy.fireTimestamp = Date.now()/1000;
+            }
+          }
+
+          function enemiesFire() {
+            that.enemies.all.forEach(enemyFire);
+          }
+
+          function updateEnemies() {
+            diff = Date.now()/1000 - timeStamp;
+            step = diff / that.enemies.speed;
+            that.enemies.all.forEach(updateEnemy);
+          }
+
+          function updateEnemy(enemy) {
+            if (enemy.movingLeft) {
+              newLeft = enemy.left-step;
+              if (newLeft<0) {
+                newLeft = newLeft * -1;
+                enemy.movingLeft = false;
+              }
+            } else {
+              newLeft = enemy.left+step;
+              if (newLeft>width) {
+                newLeft = newLeft - (newLeft - width);
+                enemy.movingLeft = true;
+              }
+            }
+            enemy.left = newLeft;
+            enemy.element.style.transform = "translate(" + newLeft + "px, 16px)";
           }
 
           this.updatePlayer = updatePlayer;
+          this.updateEnemy = updateEnemy;
+          this.updateEnemies = updateEnemies;
+          this.playerFire = playerFire;
+          this.enemiesFire = enemiesFire;
 
           function update() {
+            if (Date.now()/1000 - timeStamp > 1) {
+              timeStamp = Date.now()/1000;
+            }
             if (that.playerMovingRight || that.playerMovingLeft) {
               updatePlayer();
             }
+            if (that.playerFiring) {
+              playerFire();
+            }
+            enemiesFire();
+            updatePlayerProjectiles();
+            updateEnemyProjectiles();
+            updateEnemies();
+            timeStamp = Date.now()/1000;
             window.requestAnimationFrame(update);
           }
+          timeStamp = Date.now()/1000;
           update();
         },
         playerMoveSpeedChanged: function() {
           this.player.speed = (this.playerMoveSpeed-0)/100;
+        },
+        enemyMoveSpeedChanged: function() {
+          this.enemies.speed = (this.enemyMoveSpeed-0)/100;
+        },
+        enemyProjectileSpeedChanged: function() {
+          this.enemyProjectiles.speed = (this.enemyProjectileSpeed-0)/100;
+        },
+        playerProjectileSpeedChanged: function() {
+          this.playerProjectiles.speed = (this.playerProjectileSpeed-0)/100;
         },
         playerAnimateProjectile: function() {
           var playerProjectile = document.createElement("div");
@@ -148,7 +326,7 @@
           playerProjectile.classList.add("sprite");
           this.shadowRoot.querySelector(".game-board").appendChild(playerProjectile);
           function animateProjectile() {
-            if (top > 0) {
+            /*if (top > 0) {
               top += playerProjectile.offsetTop - that.playerProjectileSpeed;
               playerProjectile.style.transform = "translate(" + left + "px, " + top + "px)";
 
@@ -165,11 +343,11 @@
               }
             } else {
               that.shadowRoot.querySelector(".game-board").removeChild(playerProjectile);
-            }
+            }*/
           }
           animateProjectile();
         },
-        playerFire: function() {
+        /*playerFire: function() {
           this.playerFiring = true;
           var timeStamp = 0;
           var that = this;
@@ -185,7 +363,7 @@
             }
           }
           fireProjectile();
-        },
+        },*/
         createPlayer: function() {
           var player = document.createElement("div");
           player.classList.add("player");
@@ -200,6 +378,8 @@
             return;
           }
           if (dir === "a" || dir === "b") {
+            this.playerFiring = true;
+            this.fireTimestamp = Date.now()/1000;
             this.playerFire();
             return;
           }
@@ -207,12 +387,10 @@
           if (dir === "left") {
             this.playerMovingLeft = true;
             this.playerMovingRight = false;
-            this.player.timeStamp = Date.now()/1000;
             this.updatePlayer();
           } else {
             this.playerMovingLeft = false;
             this.playerMovingRight = true;
-            this.player.timeStamp = Date.now()/1000;
             this.updatePlayer();
           }
         },
@@ -221,7 +399,6 @@
           that.playerMovingLeft = false;
           that.playerMovingRight = false;
           that.playerFiring = false;
-          that.player.timeStamp = 0;
         },
         killPlayer: function() {
           this.playerAlive = false;
@@ -232,29 +409,31 @@
           }
         },
         killEnemy: function(value) {
-          var enemy = this.enemies[value];
+          var enemy = this.enemies.all[value];
           if (!enemy) {
             return;
           }
           enemy.alive = false;
           
           this.shadowRoot.querySelector(".game-board").removeChild(enemy.element);
-          this.enemies.splice(value, 1);
+          this.enemies.all.splice(value, 1);
         },
         createEnemy: function() {
           var that = this;
           var enemyElement = document.createElement("div");
           var enemy = {
             element: enemyElement,
+            left: 0,
+            movingLeft: false,
             alive: true,
-            left: 0
+            fireTimestamp: Date.now()/1000
           };
-          var direction = "right";
           enemyElement.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAb0lEQVQ4jc2TwQ3AMAgD2X+X7tMJuob7aSJw7LZSHsnDnwAng5WICExqB8BxXl25iEf5TfRqAEi/Aa0AVLm+cGTlwKyq7THA3WlIoQNoBTOsY+ThfIdPQLHfhtMar4CSAANQewaAojvrNoV1f2FGN8g2pF6X9BjjAAAAAElFTkSuQmCC)";
           enemyElement.classList.add("sprite");
           this.shadowRoot.querySelector(".game-board").appendChild(enemyElement);
-          this.enemies.push(enemy);
-          var timeStamp = 0;
+          this.enemies.all.push(enemy);
+          //this.updateEnemy(enemy);
+          /*var timeStamp = 0;
           function animateEnemyProjectile() {
             var enemyProjectile = document.createElement("div");
             enemyProjectile.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVQ4jWNgYGD4TyEeNWCYGPD/PyrGpRiHOpgADBAyAEMd1QygxAtLUTFOA7CrY/j/Hw3jNAC7OlRJQtGGRR1lBgAABrNj2GoxiV8AAAAASUVORK5CYII=)";
@@ -296,15 +475,15 @@
           }
           function enemyAI() {
             if (enemy.alive) {
-              if (direction === "right") {
+              if (enemy.direction === "right") {
                 if (enemy.left + 1 === 295) {
-                  direction = "left";
+                  enemy.direction = "left";
                 }
                 enemy.left++;
                 enemyElement.style.transform = "translate(" + enemy.left + "px, 16px)";
               } else {
                 if (enemy.left - 1 === 0) {
-                  direction = "right";
+                  enemy.direction = "right";
                 }
                 enemy.left--;
                 enemyElement.style.transform = "translate(" + enemy.left + "px, 16px)";
@@ -312,9 +491,9 @@
               // Need these to update on a timer, and not based on the animation frame speed.
               window.requestAnimationFrame(enemyAI);
             }
-          }
-          enemyAI();
-          fireProjectile();
+          }*/
+          //enemyAI();
+          //fireProjectile();
         }
       });
     </script>
