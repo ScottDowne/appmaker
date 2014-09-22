@@ -109,7 +109,8 @@
 
           this.playerProjectiles = {
             all: [],
-            speed: (this.playerProjectileSpeed-0)/100
+            speed: (this.playerProjectileSpeed-0)/100,
+            rate: this.playerProjectileRate-0
           };
 
           this.enemyProjectiles = {
@@ -174,7 +175,6 @@
           }
 
           function updateEnemyProjectile(projectile, index) {
-// garbage collection no no
             newTop = projectile.top+step;
             if (newTop < 295) {
               projectile.top = newTop;
@@ -233,9 +233,9 @@
 
           function playerFire() {
             diff = (Date.now()/1000) - that.fireTimestamp;
-            if (diff >= that.playerProjectileRate-0) {
+            // Checking for 0 here so we fire once at the start.
+            if (diff === 0 || diff >= that.playerProjectiles.rate) {
               createPlayerProjectile();
-// want the timer ticking even if fire is not being held, that way a fresh click fires, but holding it down or rapid fire still lock to the fire rate
               that.fireTimestamp = Date.now()/1000;
             }
           }
@@ -244,7 +244,6 @@
             diff = (Date.now()/1000) - enemy.fireTimestamp;
             if (diff >= that.enemyProjectileRate-0) {
               createEnemyProjectile(enemy);
-// want the timer ticking even if fire is not being held, that way a fresh click fires, but holding it down or rapid fire still lock to the fire rate
               enemy.fireTimestamp = Date.now()/1000;
             }
           }
@@ -315,6 +314,9 @@
         playerProjectileSpeedChanged: function() {
           this.playerProjectiles.speed = (this.playerProjectileSpeed-0)/100;
         },
+        playerProjectileRateChanged: function() {
+          this.playerProjectiles.rate = (this.playerProjectileRate-0);
+        },
         createPlayer: function() {
           var player = document.createElement("div");
           player.classList.add("player");
@@ -325,6 +327,7 @@
           this.playerAlive = true;
         },
         playerActionStart: function(dir) {
+          var dateNow;
           if (!this.playerAlive) {
             return;
           }
@@ -339,7 +342,10 @@
             this.updatePlayer();
           } else {
             this.playerFiring = true;
-            this.fireTimestamp = Date.now()/1000;
+            dateNow = Date.now()/1000;
+            if (!this.fireTimestamp || dateNow - this.fireTimestamp >= this.playerProjectiles.rate) {
+              this.fireTimestamp = dateNow;
+            }
             this.playerFire();
           }
         },
