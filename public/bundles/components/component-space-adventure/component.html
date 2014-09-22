@@ -315,55 +315,6 @@
         playerProjectileSpeedChanged: function() {
           this.playerProjectiles.speed = (this.playerProjectileSpeed-0)/100;
         },
-        playerAnimateProjectile: function() {
-          var playerProjectile = document.createElement("div");
-          var that = this;
-          var hitSomething = false;
-          playerProjectile.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVQ4jWNgYGD4TyEeNWCYGPD/PyrGpRiHOpgADBAyAEMd1QygxAtLUTFOA7CrY/j/Hw3jNAC7OlRJQtGGRR1lBgAABrNj2GoxiV8AAAAASUVORK5CYII=)";
-          var left = that.player.position.left;
-          var top = that.player.position.top;
-          playerProjectile.style.transform = "translate(" + left + "px, " + top + "px)";
-          playerProjectile.classList.add("sprite");
-          this.shadowRoot.querySelector(".game-board").appendChild(playerProjectile);
-          function animateProjectile() {
-            /*if (top > 0) {
-              top += playerProjectile.offsetTop - that.playerProjectileSpeed;
-              playerProjectile.style.transform = "translate(" + left + "px, " + top + "px)";
-
-              // Need these to update on a timer, and not based on the animation frame speed.
-              window.requestAnimationFrame(animateProjectile);
-              if (!hitSomething && top >= 32) {
-                for (var i = 0; i < that.enemies.length; i++) {
-                  if (that.enemies[i].alive && (left + 16) >= that.enemies[i].left && left <= (that.enemies[i].left + 16)) {
-                    that.broadcast("enemyHit", i.toString());
-                    hitSomething = true;
-                    break;
-                  }
-                }
-              }
-            } else {
-              that.shadowRoot.querySelector(".game-board").removeChild(playerProjectile);
-            }*/
-          }
-          animateProjectile();
-        },
-        /*playerFire: function() {
-          this.playerFiring = true;
-          var timeStamp = 0;
-          var that = this;
-          function fireProjectile() {
-            if (that.playerFiring) {
-              var diff = Date.now()/1000 - timeStamp;
-              if (timstamp = 0 || diff >= that.playerProjectileRate-0) {
-                that.playerAnimateProjectile();
-                timeStamp = Date.now()/1000;
-              }
-
-              window.requestAnimationFrame(fireProjectile);
-            }
-          }
-          fireProjectile();
-        },*/
         createPlayer: function() {
           var player = document.createElement("div");
           player.classList.add("player");
@@ -377,21 +328,19 @@
           if (!this.playerAlive) {
             return;
           }
-          if (dir === "a" || dir === "b") {
-            this.playerFiring = true;
-            this.fireTimestamp = Date.now()/1000;
-            this.playerFire();
-            return;
-          }
 
           if (dir === "left") {
             this.playerMovingLeft = true;
             this.playerMovingRight = false;
             this.updatePlayer();
-          } else {
+          } else if (dir === "right") {
             this.playerMovingLeft = false;
             this.playerMovingRight = true;
             this.updatePlayer();
+          } else {
+            this.playerFiring = true;
+            this.fireTimestamp = Date.now()/1000;
+            this.playerFire();
           }
         },
         playerActionStop: function() {
@@ -432,68 +381,6 @@
           enemyElement.classList.add("sprite");
           this.shadowRoot.querySelector(".game-board").appendChild(enemyElement);
           this.enemies.all.push(enemy);
-          //this.updateEnemy(enemy);
-          /*var timeStamp = 0;
-          function animateEnemyProjectile() {
-            var enemyProjectile = document.createElement("div");
-            enemyProjectile.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVQ4jWNgYGD4TyEeNWCYGPD/PyrGpRiHOpgADBAyAEMd1QygxAtLUTFOA7CrY/j/Hw3jNAC7OlRJQtGGRR1lBgAABrNj2GoxiV8AAAAASUVORK5CYII=)";
-            var left = enemy.left;
-            var top = 16;
-            var hitSomething = false;
-            enemyProjectile.style.transform = "translate(" + left + "px, " + top + "px)";
-            enemyProjectile.classList.add("sprite");
-            that.shadowRoot.querySelector(".game-board").appendChild(enemyProjectile);
-            function animateProjectile() {
-              // Need these to update on a timer, and not based on the animation frame speed.
-              if (top < 295) {
-                // this speed thing is so rubbish
-                top += (that.enemyProjectileSpeed-0);
-                enemyProjectile.style.transform = "translate(" + left + "px, " + top + "px)";
-                window.requestAnimationFrame(animateProjectile);
-                if (that.playerAlive && !hitSomething && top >= 263) {
-                  if ((left + 16) >= that.player.position.left && left <= (that.player.position.left + 16) ) {
-                    hitSomething = true;
-                    that.broadcast("playerHit");
-                  }
-                }
-              } else {
-                that.shadowRoot.querySelector(".game-board").removeChild(enemyProjectile);
-              }
-            }
-            animateProjectile();
-          }
-          function fireProjectile() {
-            if (enemy.alive) {
-              var diff = Date.now()/1000 - timeStamp;
-              if (timstamp = 0 || diff >= that.enemyProjectileRate-0) {
-                animateEnemyProjectile();
-                timeStamp = Date.now()/1000;
-              }
-
-              window.requestAnimationFrame(fireProjectile);
-            }
-          }
-          function enemyAI() {
-            if (enemy.alive) {
-              if (enemy.direction === "right") {
-                if (enemy.left + 1 === 295) {
-                  enemy.direction = "left";
-                }
-                enemy.left++;
-                enemyElement.style.transform = "translate(" + enemy.left + "px, 16px)";
-              } else {
-                if (enemy.left - 1 === 0) {
-                  enemy.direction = "right";
-                }
-                enemy.left--;
-                enemyElement.style.transform = "translate(" + enemy.left + "px, 16px)";
-              }
-              // Need these to update on a timer, and not based on the animation frame speed.
-              window.requestAnimationFrame(enemyAI);
-            }
-          }*/
-          //enemyAI();
-          //fireProjectile();
         }
       });
     </script>
