@@ -1,0 +1,126 @@
+<polymer-element name="ceci-pixel-art" extends="ceci-element" attributes="selectedColor" selectedColor="black">
+  <ceci-definition>
+    {
+      "name": "Pixel Art",
+      "thumbnail": "",
+      "description": "",
+      "broadcasts": {
+        "data": {
+          "label": "",
+          "description": ""
+        },
+        "send": {
+          "label": "",
+          "description": ""
+        }
+      },
+      "listeners": {
+        "send": {
+          "description": "",
+          "label": ""
+        },
+        "clear": {
+          "description": "",
+          "label": ""
+        },
+        "setcolor": {
+          "description": "",
+          "label": ""
+        },
+        "togglegrid": {
+          "description": "",
+          "label": ""
+        }
+      }
+    }
+  </ceci-definition>
+  <template>
+    <link rel="stylesheet" href="component.css"></link>
+    <div class="pixel-art-container">
+
+    </div>
+    <shadow></shadow>
+  </template>
+    <script>
+      Polymer("ceci-pixel-art", {
+        ready: function() {
+          var that = this;
+          this.canvas = document.createElement("canvas");
+          this.canvas.height = 16;
+          this.canvas.width = 16;
+          this.ctx = this.canvas.getContext("2d");
+          this.ctx.fillStyle = "white";
+          this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+          var ctx = this.ctx;
+
+          function paintPixel(block, row, col) {
+            block.style.backgroundColor = that.selectedColor;
+            ctx.fillStyle = that.selectedColor;
+            var row = row || block.parentNode.getAttribute("data-tile-editor-row");
+            var col = col || block.getAttribute("data-tile-editor-col");
+            ctx.fillRect(col, row, 1, 1);
+          }
+
+          function onPixelMousedown(e) {
+            if (e.button !== 0) {
+              return;
+            }
+            e.preventDefault();
+            paintPixel(this);
+          }
+
+          function onPixelMouseover(e) {
+            if (e.buttons !== 1 || that.brush === "fill") {
+              return;
+            }
+            e.preventDefault();
+            paintPixel(this);
+          }
+
+          this.super();
+          var container = this.shadowRoot.querySelector(".pixel-art-container");
+          for (var r = 0; r < 16; r++) {
+            var row = document.createElement("div");
+            row.classList.add("pixel-art-row");
+            row.setAttribute("data-tile-editor-row", r);
+            for (var c = 0; c < 16; c++) {
+              var col = document.createElement("span");
+              var colContainer = document.createElement("span");
+              colContainer.appendChild(col);
+              col.classList.add("pixel-art-pixel");
+              colContainer.classList.add("pixel-art-pixel-border");
+              col.setAttribute("data-tile-editor-col", c);
+              col.style.backgroundColor = "white";
+              col.addEventListener("mouseover", onPixelMouseover);
+              col.addEventListener("mousedown", onPixelMousedown);
+              row.appendChild(colContainer);
+            }
+            container.appendChild(row);
+          }
+        },
+        setcolor: function(color) {
+          this.selectedColor = color;
+        },
+        clear: function(color) {
+          var pixels = this.shadowRoot.querySelectorAll(".pixel-art-pixel");
+          for (var i = 0; i < pixels.length; i++) {
+            pixels[i].style.backgroundColor = "white";
+          }
+          this.ctx.fillStyle = "white";
+          this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        },
+        send: function() {
+          this.broadcast("data", this.canvas.toDataURL());
+          this.broadcast("send");
+        },
+        togglegrid: function() {
+          var container = this.shadowRoot.querySelector(".pixel-art-container");
+          if (container.classList.contains("no-grid")) {
+            container.classList.remove("no-grid");
+          } else {
+            container.classList.add("no-grid");
+          }
+        }
+      });
+    </script>
+</polymer-element>
