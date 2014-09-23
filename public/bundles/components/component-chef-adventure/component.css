@@ -1,0 +1,169 @@
+:host {
+  display: block;
+  width: 100%;
+  position: relative;
+}
+
+:host.selected .tile-palette-container {
+  display: block;
+}
+
+:host .tile-palette-container {
+  height: 160px;
+  bottom: -160px;
+  position: absolute;
+  width: 100%;
+  border: 1px solid #000;
+  font-size: 0;
+  display: none;
+  background-color: white;
+}
+
+:host .tile-palette {
+  width: 100%;
+}
+
+:host .palette-button {
+  height: 32px;
+  width: 32px;
+  display: inline-block;
+  padding: 0;
+  cursor: pointer;
+}
+
+:host .palette-done-block:after {
+  content: "D";
+  font-size: 23px;
+  position: absolute;
+}
+
+:host .palette-paint-block:after {
+  content: "P";
+  font-size: 23px;
+  position: absolute;
+}
+
+:host .palette-fill-block:after {
+  content: "F";
+  font-size: 23px;
+  position: absolute;
+}
+
+:host .palette-block,
+:host .col {
+  height: 32px;
+  width: 32px;
+  display: inline-block;
+  padding: 0;
+  cursor: pointer;
+  
+}
+
+:host .palette-wall-block,
+:host .col.wall {
+  
+
+}
+
+:host .col.wall.pressed {
+}
+
+:host .col.wall:after {
+  content: "";
+}
+
+:host .palette-redswitch:after,
+:host .col.redswitch:after {
+  font-size: 23px;
+  position: absolute;
+}
+
+:host .palette-blueswitch:after,
+:host .col.blueswitch:after {
+  font-size: 23px;
+  position: absolute;
+}
+
+:host .palette-greenswitch:after,
+:host .col.greenswitch:after {
+  font-size: 23px;
+  position: absolute;
+}
+
+:host .col.player {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAoUlEQVRYhe3TsQ2AIBBAUXawI1ZOYMIYVi7jLI7gGtc7BCGhtGGBs6LwkGAMipgrfgOX4zUI5xyWTDCAAcUBWmvMGQAcSs2XB1hrMWcUkJpnQD0Auvhq9QG2dXm0egAwTwjzFCxoZYOtbII5eh7bw4B6AFeLQV/7BdkBxphD46BO8w/76L3qO1R9F+zzfRdAITFAKgb8B+AX3Y0BsYc/A9gBIK4UDHNyGoUAAAAASUVORK5CYII=") !important;
+}
+
+:host .palette-red-block,
+:host .col.red.wall {
+  
+
+}
+
+:host .palette-blue-block,
+:host .col.blue.wall {
+  
+}
+
+:host .palette-green-block,
+:host .col.green.wall {
+  
+
+}
+
+:host .palette-selected {
+  opacity: 0.5;
+}
+
+:host .row {
+  margin: auto;
+  width: 288px;
+}
+
+:host .board {
+  font-size: 0;
+}
+
+:host .tile-editor-canvas {
+  height: 160px;
+  width: 160px;
+}
+
+:host .tile-editor-container {
+  font-size: 0;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: white;
+  border-style: solid;
+  border-color: black;
+  border-top-width: 1px;
+  border-right-width: 0;
+  border-bottom-width: 0;
+  border-left-width: 0;
+  z-index: 1;
+}
+
+:host .tile-editor-pixel {
+  height: 9px;
+  width: 9px;
+  display: inline-block;
+  border-style: solid;
+  border-color: black;
+  border-bottom-width: 1px;
+  border-right-width: 0;
+  border-top-width: 0;
+  border-left-width: 1px;
+  cursor: pointer;
+}
+
+:host .tile-editor-pixel:hover {
+  opacity: 0.5;
+}
+
+:host .tile-editor-palette {
+  width: 25px;
+  height: 100%;
+}
+
+
