@@ -157,9 +157,11 @@
           this[palette.getAttribute("data-palette")] = "background-image: " + color + ";";
         },
         playerspriteChanged: function() {
-          //var color = "url('" + this.playersprite + "')";
-          //var palette = this.shadowRoot.querySelector(".palette-clear-block");
-          //this[palette.getAttribute("data-palette")] = "background-image: " + color + ";";
+          var player = this.querySelector(".player");
+          if (!player) {
+            return;
+          }
+          player.style.backgroundImage = "url('" + this.playersprite + "')";
         },
         wallspriteChanged: function() {
           var color = "url('" + this.wallsprite + "')";
@@ -234,47 +236,52 @@
           if (!player) {
             return;
           }
-          var playerRow = parseInt(player.parentNode.getAttribute("data-row"), 10);
-          var playerCol = parseInt(player.getAttribute("data-col"), 10);
+          var playerRow = player.offsetTop / 32; //parseInt(player.parentNode.getAttribute("data-row"), 10);
+          var playerCol = player.offsetLeft / 32; //parseInt(player.getAttribute("data-col"), 10);
           var targetCol;
 
           if (direction === "up") {
             if (playerRow === 0) {
               this.broadcast("exittop", playerCol);
-              player.classList.remove("player");
+              player.parentNode.removeChild(player);
               return;
             }
-            var targetRow = this.querySelector('*[data-row="'+ (playerRow-1) + '"]');
+            playerRow--;
+            var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
           } else if (direction === "down") {
             if (playerRow === 8) {
               this.broadcast("exitbottom", playerCol);
-              player.classList.remove("player");
+              player.parentNode.removeChild(player);
               return;
             }
-            var targetRow = this.querySelector('*[data-row="'+ (playerRow+1) + '"]');
+            playerRow++;
+            var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
           } else if (direction === "left") {
             if (playerCol === 0) {
               this.broadcast("exitleft", playerRow);
-              player.classList.remove("player");
+              player.parentNode.removeChild(player);
               return;
             }
+            playerCol--;
             var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
-            targetCol = targetRow.querySelector('*[data-col="'+ (playerCol-1) + '"]');
+            targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
           } else if (direction === "right") {
             if (playerCol === 8) {
               this.broadcast("exitright", playerRow);
-              player.classList.remove("player");
+              player.parentNode.removeChild(player);
               return;
             }
+            playerCol++;
             var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
-            targetCol = targetRow.querySelector('*[data-col="'+ (playerCol+1) + '"]');
+            targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
           }
           if (targetCol) {
             if (!targetCol.classList.contains("wall") || targetCol.classList.contains("pressed")) {
-              player.classList.remove("player");
-              targetCol.classList.add("player");
+              player.style.top = (playerRow * 32) + "px";
+              player.style.left = (playerCol * 32) + "px";
+              //targetCol.classList.add("player");
               if (targetCol.classList.contains("redswitch")) {
                 this.broadcast("switched", "red");
                 this.switched("red");
@@ -300,25 +307,33 @@
           }
         },
         enterleft: function(row) {
-          this.enter(this.querySelector("*[data-row='"+ row + "'] .leftside"));
+          this.enter(row, 0);
+          //this.enter(this.querySelector("*[data-row='"+ row + "'] .leftside"));
         },
         enterright: function(row) {
-          this.enter(this.querySelector("*[data-row='"+ row + "'] .rightside"));
+          this.enter(row, 8);
+          //this.enter(this.querySelector("*[data-row='"+ row + "'] .rightside"));
         },
         entertop: function(col) {
-          this.enter(this.querySelector(".topside [data-col='"+ col + "'] "));
+          this.enter(0, col);
+          //this.enter(this.querySelector(".topside [data-col='"+ col + "'] "));
         },
         enterbottom: function(col) {
-          this.enter(this.querySelector(".bottomside [data-col='"+ col + "'] "));
+          this.enter(8, col);
+          //this.enter(this.querySelector(".bottomside [data-col='"+ col + "'] "));
         },
-        enter: function(element) {
+        enter: function(row, col) {
           var that = this;
           setTimeout( function() {
             var player = that.querySelector(".player");
-            if (player) {
-              player.classList.remove("player");
+            if (!player) {
+              player = document.createElement("div");
+              player.classList.add("player");
+              that.querySelector(".board").appendChild(player);
             }
-            element.classList.add("player");
+            player.style.backgroundImage = "url('" + that.playersprite + "')";
+            player.style.top = (row * 32) + "px";
+            player.style.left = (col * 32) + "px";
             that.navigateHere();
           });
         },
@@ -436,7 +451,6 @@
                 var col = row.querySelector('*[data-col="'+ c + '"]');
                 col.addEventListener("mousedown", onBlockMousedown);
                 col.addEventListener("mouseover", onBlockOver);
-                col.classList.remove("player");
                 col.classList.remove("pressed");
               }
             }

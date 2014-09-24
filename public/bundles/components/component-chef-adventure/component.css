@@ -90,8 +90,10 @@
   position: absolute;
 }
 
-:host .col.player {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAoUlEQVRYhe3TsQ2AIBBAUXawI1ZOYMIYVi7jLI7gGtc7BCGhtGGBs6LwkGAMipgrfgOX4zUI5xyWTDCAAcUBWmvMGQAcSs2XB1hrMWcUkJpnQD0Auvhq9QG2dXm0egAwTwjzFCxoZYOtbII5eh7bw4B6AFeLQV/7BdkBxphD46BO8w/76L3qO1R9F+zzfRdAITFAKgb8B+AX3Y0BsYc/A9gBIK4UDHNyGoUAAAAASUVORK5CYII=") !important;
+:host .player {
+  height: 32px;
+  width: 32px;
+  position: absolute;
 }
 
 :host .palette-red-block,
@@ -117,11 +119,13 @@
 
 :host .row {
   margin: auto;
-  width: 288px;
 }
 
 :host .board {
   font-size: 0;
+  margin: auto;
+  width: 288px;
+  position: relative;
 }
 
 :host .tile-editor-canvas {
