@@ -94,6 +94,120 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
       return e[0];
     },
 
+    'sprite': function (element, attributeName, title, value, definition) {
+
+      var previewCanvas = document.createElement("canvas");
+      var colorPicker = document.createElement("input");
+      colorPicker.type = "color";
+      colorPicker.classList.add("sprite-color-picker");
+      previewCanvas.height = 32;
+      previewCanvas.width = 32;
+      var previewCtx = previewCanvas.getContext("2d");
+      var container = document.createElement("div");
+      var label = document.createElement("label");
+      label.textContent = title;
+      container.classList.add("sprite-container");
+      var grid = document.createElement("div");
+      grid.classList.add("grid-container");
+
+      for (var r = 0; r < 16; r++) {
+        var row = document.createElement("div");
+        row.classList.add("tile-editor-row");
+        row.setAttribute("data-tile-editor-row", r);
+        for (var c = 0; c < 16; c++) {
+          var col = document.createElement("span");
+          col.setAttribute("data-tile-editor-col", c);
+          col.classList.add("tile-editor-pixel");
+          col.addEventListener("mouseover", onPixelMouseover);
+          col.addEventListener("mousedown", onPixelMousedown);
+          row.appendChild(col);
+        }
+        grid.appendChild(row);
+      }
+
+      // this string needs to be in rgb(n, n, n) format, it's easier to work with,
+      // because canvas color data is in the range of 0-255
+      var selectedColor = "rgb(0, 0 ,0)";
+
+      colorPicker.addEventListener("change", function() {
+        var div = document.createElement("div");
+        div.style.backgroundColor = this.value;
+        selectedColor = div.style.backgroundColor;
+      });
+
+      function onPixelMouseup() {
+        window.removeEventListener("mouseup", onPixelMouseup);
+        element.setAttribute(attributeName, previewCanvas.toDataURL());
+      }
+      function paintPixel(block, row, col) {
+        block.style.backgroundColor = selectedColor;
+
+        previewCtx.fillStyle = selectedColor;
+        var row = row || block.parentNode.getAttribute("data-tile-editor-row");
+        var col = col || block.getAttribute("data-tile-editor-col");
+        previewCtx.fillRect(col*2,row*2,2,2);
+      }
+      function onPixelMousedown(e) {
+        if (e.button !== 0) {
+          return;
+        }
+        window.addEventListener("mouseup", onPixelMouseup);
+        paintPixel(this);
+      }
+      function onPixelMouseover(e) {
+        if (e.buttons !== 1) {
+          return;
+        }
+        paintPixel(this);
+      }
+
+      function fillGrid() {
+        var imgd = previewCtx.getImageData(0, 0, previewCanvas.width, previewCanvas.height);
+
+        for (var x = 0; x < imgd.width; x+=2) {
+          var realX = x/2;
+          for (var y = 0; y < imgd.height; y+=2) {
+            var realY = y/2;
+            var i = x*4+y*4*imgd.width;
+            var targetRow = grid.querySelector('*[data-tile-editor-row="'+ (realY) + '"]');
+            var targetCol = targetRow.querySelector('*[data-tile-editor-col="'+ (realX) + '"]');
+            // for now convert transparent to white
+            if (imgd.data[i+3] === 0) {
+              targetCol.style.backgroundColor = "rgb(255, 255, 255)";
+            } else {
+              var red = imgd.data[i];
+              var green = imgd.data[i+1];
+              var blue = imgd.data[i+2];
+              targetCol.style.backgroundColor = "rgb("+red+", "+green+", "+blue+")";
+            }
+          }
+        }
+      }
+
+      function fillPreview(data) {
+        var image = document.createElement("img");
+        previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+        image.onload = function() {
+          previewCtx.drawImage(image,0,0);
+          fillGrid();
+        };
+        if (!data) {
+          fillGrid();
+          return;
+        }
+        image.src = data;
+      }
+      fillPreview(value);
+
+      container.appendChild(label);
+      container.appendChild(previewCanvas);
+      container.appendChild(colorPicker);
+      container.appendChild(grid);
+
+      return container;
+    },
+
+
     'textarea': function (element, attributeName, title, value, definition) {
       var e = $('<div><label></label><textarea></textarea></div>');
       e.find("label").text(title);

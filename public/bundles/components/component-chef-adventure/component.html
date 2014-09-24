@@ -1,15 +1,47 @@
 <polymer-element name="ceci-chef-adventure" extends="ceci-element"
-  attributes="clear wall red blue green blueswitch greenswitch redswitch"
-  clear="background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAhUlEQVRYhe3XwQ2AIAwF0JowL2ENZiCM5ghsgNa7CQG02C96+Oc+4KcJtO4La4Y+A7CB2AYCBrho2EXzOAQHUErKnlP2Ylfe3QE1wNXBvRBcwGjY+wDSg/EB0oupdAA8QOsCkYLgAaSepLW0+IC7ZaxB8AGjMzFgq2R+wCn4/wKt/AB1wAEpUF7eamflHQAAAABJRU5ErkJggg==');"
-  wall="background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAk0lEQVRYhWOom8vzv24uz//de1aQhGH6KNXPMOAOaMhy/t+Q5fx/ydRSkjDMIEr1jzpg5Dlg9+5lEDxiHTDgUTDqAKIdUJ/l9L8+y2kEOABWKcAMIhajV0bk6h88DhhtD5CaiA4dXPP/0ME1BBMhrOjFpX/4O4CQ/uHnAEIF2PB3wIBHwagDRh1AsgMGTXU8UA4AANEaiS8F8jfjAAAAAElFTkSuQmCC');"
-  red="background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAiUlEQVRYhWM40SPwfyAxw4A7INeK6f9A4MHnAJjAgiBmmuKh4wBqJ7ah5wBq4W21LP+31bIMQQfAxHEZSAgPHwfUOEHwqANwRQk6Rjdn1AGjDhh+DiCEqV4UDxoHEAp6XHjoOOBQK8v/Q62YCsnFQ9cBsCCnFkaPksHvAGo3RgnhweMAeuNB4wAA8HXyXulpvwIAAAAASUVORK5CYII=');"
-  blue="background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAeUlEQVRYhWNY3PLo/0BihgF3gKdNzX9Pm5r/bVnnaIJhFuESH7oOgOkjV//QdQCuICXXnFEHDD0HoBuAy0FDzwG0LpBGHTD4HUAvi0cdMHQdQK3ESnaTbMAcgF7UjlwHkFvpUJwIB9wBtMLD1wHEmjf4HDBQeMAdAACZk61XAUosyAAAAABJRU5ErkJggg==');"
-  green="background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAbElEQVRYhWPwmV3632d26f+JV6cPCGYYcAcYlAT9NygJ+g9zCL3wqAOGvgNgBgx/B8DkycVD3wHkFjDDzwHEJtZRB4w6YNQBw98BhPDwdQAujEvd8HEArfCoA4aOA4htYg19B9Abwxwy4A4AAEMumjQBe3MiAAAAAElFTkSuQmCC');">
+  attributes="clear wall red blue green blueswitch greenswitch redswitch wallsprite groundsprite blueblocksprite greenblocksprite redblocksprite playersprite"
+  groundsprite="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAhUlEQVRYhe3XwQ2AIAwF0JowL2ENZiCM5ghsgNa7CQG02C96+Oc+4KcJtO4La4Y+A7CB2AYCBrho2EXzOAQHUErKnlP2Ylfe3QE1wNXBvRBcwGjY+wDSg/EB0oupdAA8QOsCkYLgAaSepLW0+IC7ZaxB8AGjMzFgq2R+wCn4/wKt/AB1wAEpUF7eamflHQAAAABJRU5ErkJggg=="
+  wallsprite="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAk0lEQVRYhWOom8vzv24uz//de1aQhGH6KNXPMOAOaMhy/t+Q5fx/ydRSkjDMIEr1jzpg5Dlg9+5lEDxiHTDgUTDqAKIdUJ/l9L8+y2kEOABWKcAMIhajV0bk6h88DhhtD5CaiA4dXPP/0ME1BBMhrOjFpX/4O4CQ/uHnAEIF2PB3wIBHwagDRh1AsgMGTXU8UA4AANEaiS8F8jfjAAAAAElFTkSuQmCC"
+  redblocksprite="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAiUlEQVRYhWM40SPwfyAxw4A7INeK6f9A4MHnAJjAgiBmmuKh4wBqJ7ah5wBq4W21LP+31bIMQQfAxHEZSAgPHwfUOEHwqANwRQk6Rjdn1AGjDhh+DiCEqV4UDxoHEAp6XHjoOOBQK8v/Q62YCsnFQ9cBsCCnFkaPksHvAGo3RgnhweMAeuNB4wAA8HXyXulpvwIAAAAASUVORK5CYII="
+  blueblocksprite="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAeUlEQVRYhWNY3PLo/0BihgF3gKdNzX9Pm5r/bVnnaIJhFuESH7oOgOkjV//QdQCuICXXnFEHDD0HoBuAy0FDzwG0LpBGHTD4HUAvi0cdMHQdQK3ESnaTbMAcgF7UjlwHkFvpUJwIB9wBtMLD1wHEmjf4HDBQeMAdAACZk61XAUosyAAAAABJRU5ErkJggg=="
+  greenblocksprite="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAbElEQVRYhWPwmV3632d26f+JV6cPCGYYcAcYlAT9NygJ+g9zCL3wqAOGvgNgBgx/B8DkycVD3wHkFjDDzwHEJtZRB4w6YNQBw98BhPDwdQAujEvd8HEArfCoA4aOA4htYg19B9Abwxwy4A4AAEMumjQBe3MiAAAAAElFTkSuQmCC" playersprite="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAoUlEQVRYhe3TsQ2AIBBAUXawI1ZOYMIYVi7jLI7gGtc7BCGhtGGBs6LwkGAMipgrfgOX4zUI5xyWTDCAAcUBWmvMGQAcSs2XB1hrMWcUkJpnQD0Auvhq9QG2dXm0egAwTwjzFCxoZYOtbII5eh7bw4B6AFeLQV/7BdkBxphD46BO8w/76L3qO1R9F+zzfRdAITFAKgb8B+AX3Y0BsYc/A9gBIK4UDHNyGoUAAAAASUVORK5CYII=">
   <ceci-definition>
     {
       "name": "Chef Adventure",
       "thumbnail": "./thumbnail.png",
       "description": "",
+      "attributes": {
+        "playersprite": {
+          "description": "",
+          "label": "Player Sprite",
+          "editable": "sprite"
+        },
+        "groundsprite": {
+          "description": "",
+          "label": "Ground Sprite",
+          "editable": "sprite"
+        },
+        "wallsprite": {
+          "description": "",
+          "label": "Wall Sprite",
+          "editable": "sprite"
+        },
+        "blueblocksprite": {
+          "description": "",
+          "label": "Blue Block Sprite",
+          "editable": "sprite"
+        },
+        "greenblocksprite": {
+          "description": "",
+          "label": "Green Block Sprite",
+          "editable": "sprite"
+        },
+        "redblocksprite": {
+          "description": "",
+          "label": "Red Block Sprite",
+          "editable": "sprite"
+        }
+      },
       "broadcasts": {
         "switched": {
           "label": "",
@@ -71,28 +103,24 @@
         <div class="palette-blocks">
           <span class="palette-block palette-clear-block palette-selected" data-palette="clear" on-click="{{onTileClicked}}" style="{{clear}}"></span>
           <span class="palette-block palette-wall-block" data-palette="wall" on-click="{{onTileClicked}}" style="{{wall}}"></span>
-          <canvas class="palette-tile-preview" width="32" height="32"></canvas>
-        </div>
-        <div class="palette-blocks">
+          <!--<canvas class="palette-tile-preview" width="32" height="32"></canvas>-->
           <span class="palette-block palette-wall-block palette-blue-block" data-palette="blue" on-click="{{onTileClicked}}" style="{{blue}}"></span>
           <span class="palette-block palette-wall-block palette-green-block" data-palette="green" on-click="{{onTileClicked}}" style="{{green}}"></span>
           <span class="palette-block palette-wall-block palette-red-block" data-palette="red" on-click="{{onTileClicked}}" style="{{red}}"></span>
-        </div>
-        <div class="palette-blocks">
           <span class="palette-block palette-blueswitch" data-palette="blueswitch" on-click="{{onTileClicked}}" style="{{blueswitch}}"></span>
           <span class="palette-block palette-greenswitch" data-palette="greenswitch" on-click="{{onTileClicked}}" style="{{greenswitch}}"></span>
           <span class="palette-block palette-redswitch" data-palette="redswitch" on-click="{{onTileClicked}}" style="{{redswitch}}"></span>
         </div>
-        <div class="palette-blocks">
+        <!--<div class="palette-blocks">
           <input type="color" class="tile-editor-colour-picker" on-change="{{onColourPickerChange}}">
           <span class="palette-button palette-done-block" on-click="{{onDoneClicked}}"></span>
           <span class="palette-button palette-paint-block" on-click="{{onPaintClicked}}"></span>
           <span class="palette-button palette-fill-block" on-click="{{onFillClicked}}"></span>
-        </div>
+        </div>-->
       </div>
-      <div class="tile-editor-container">
+      <!--<div class="tile-editor-container">
         <div class="tile-editor-canvas"></div>
-      </div>
+      </div>-->
     </div>
     <shadow></shadow>
   </template>
@@ -105,37 +133,67 @@
           this.cols = 9;
           this.generateBoard();
           this.palette = "clear";
-          this.brush = "paint";
+          //this.brush = "paint";
           // this string needs to be in rgb(n, n, n) format, it's easier to work with
-          this.selectedColor = "rgb(0, 0 ,0)";
+          //this.selectedColor = "rgb(0, 0 ,0)";
 
-          this.canvas = this.shadowRoot.querySelector(".palette-tile-preview");
-          this.ctx = this.canvas.getContext("2d");
-          this.fillTilePreview(this.shadowRoot.querySelector(".palette-clear-block"));
+          //this.canvas = this.shadowRoot.querySelector(".palette-tile-preview");
+          //this.ctx = this.canvas.getContext("2d");
+          //this.fillTilePreview(this.shadowRoot.querySelector(".palette-clear-block"));
         },
-        onColourPickerChange: function(event, detail, sender) {
+        /*onColourPickerChange: function(event, detail, sender) {
           var div = document.createElement("div");
           div.style.backgroundColor = sender.value;
           this.selectedColor = div.style.backgroundColor;
-        },
-        onDoneClicked: function() {
+        },*/
+        /*onDoneClicked: function() {
           var color = "url('" + this.canvas.toDataURL() + "')";
-          var selected = this.shadowRoot.querySelector(".palette-selected");
+          var palette = this.shadowRoot.querySelector(".palette-selected");
           this[selected.getAttribute("data-palette")] = "background-image: " + color + ";";
+        },*/
+        groundspriteChanged: function() {
+          var color = "url('" + this.groundsprite + "')";
+          var palette = this.shadowRoot.querySelector(".palette-clear-block");
+          this[palette.getAttribute("data-palette")] = "background-image: " + color + ";";
         },
-        onPaintClicked: function() {
+        playerspriteChanged: function() {
+          //var color = "url('" + this.playersprite + "')";
+          //var palette = this.shadowRoot.querySelector(".palette-clear-block");
+          //this[palette.getAttribute("data-palette")] = "background-image: " + color + ";";
+        },
+        wallspriteChanged: function() {
+          var color = "url('" + this.wallsprite + "')";
+          var palette = this.shadowRoot.querySelector(".palette-wall-block");
+          this[palette.getAttribute("data-palette")] = "background-image: " + color + ";";
+        },
+        blueblockspriteChanged: function() {
+          var color = "url('" + this.blueblocksprite + "')";
+          var palette = this.shadowRoot.querySelector(".palette-blue-block");
+          this[palette.getAttribute("data-palette")] = "background-image: " + color + ";";
+        },
+        greenblockspriteChanged: function() {
+          var color = "url('" + this.greenblocksprite + "')";
+          var palette = this.shadowRoot.querySelector(".palette-green-block");
+          this[palette.getAttribute("data-palette")] = "background-image: " + color + ";";
+        },
+        redblockspriteChanged: function() {
+          var color = "url('" + this.redblocksprite + "')";
+          var palette = this.shadowRoot.querySelector(".palette-red-block");
+          this[palette.getAttribute("data-palette")] = "background-image: " + color + ";";
+        },
+        /*onPaintClicked: function() {
           this.brush = "paint";
         },
         onFillClicked: function() {
           this.brush = "fill";
-        },
+        },*/
         onTileClicked: function(event, detail, sender) {
           this.shadowRoot.querySelector(".palette-selected").classList.remove("palette-selected");
           sender.classList.add("palette-selected");
           this.palette = sender.getAttribute("data-palette");
-          this.fillTilePreview(sender);
+          //this.fillTilePreview(sender);
         },
-        fillTileEditor: function() {
+        /*fillTileEditor: function() {
           var imgd = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
 
           for (var x = 0; x < imgd.width; x+=2) {
@@ -156,8 +214,8 @@
               }
             }
           }
-        },
-        fillTilePreview: function(sender) {
+        },*/
+        /*fillTilePreview: function(sender) {
           var that = this;
           var image = document.createElement("img");
           that.ctx.clearRect(0, 0, that.canvas.width, that.canvas.height);
@@ -170,9 +228,8 @@
             return;
           }
           image.src = sender.style.backgroundImage.replace("url(\"", "").replace("\")", "");
-        },
-        buttonpress: function(button) {
-          var direction = button;
+        },*/
+        buttonpress: function(direction) {
           var player = this.querySelector(".player");
           if (!player) {
             return;
@@ -180,7 +237,8 @@
           var playerRow = parseInt(player.parentNode.getAttribute("data-row"), 10);
           var playerCol = parseInt(player.getAttribute("data-col"), 10);
           var targetCol;
-          if (direction === "up-button") {
+
+          if (direction === "up") {
             if (playerRow === 0) {
               this.broadcast("exittop", playerCol);
               player.classList.remove("player");
@@ -188,7 +246,7 @@
             }
             var targetRow = this.querySelector('*[data-row="'+ (playerRow-1) + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
-          } else if (direction === "down-button") {
+          } else if (direction === "down") {
             if (playerRow === 8) {
               this.broadcast("exitbottom", playerCol);
               player.classList.remove("player");
@@ -196,7 +254,7 @@
             }
             var targetRow = this.querySelector('*[data-row="'+ (playerRow+1) + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
-          } else if (direction === "left-button") {
+          } else if (direction === "left") {
             if (playerCol === 0) {
               this.broadcast("exitleft", playerRow);
               player.classList.remove("player");
@@ -204,7 +262,7 @@
             }
             var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ (playerCol-1) + '"]');
-          } else if (direction === "right-button") {
+          } else if (direction === "right") {
             if (playerCol === 8) {
               this.broadcast("exitright", playerRow);
               player.classList.remove("player");
@@ -309,15 +367,15 @@
             }
             paintBlock(this);
           }
-          function paintPixel(block, row, col) {
+          /*function paintPixel(block, row, col) {
             block.style.backgroundColor = that.selectedColor;
 
             that.ctx.fillStyle = that.selectedColor;
             var row = row || block.parentNode.getAttribute("data-tile-editor-row");
             var col = col || block.getAttribute("data-tile-editor-col");
             that.ctx.fillRect(col*2,row*2,2,2);
-          }
-          function onPixelMousedown(e) {
+          }*/
+          /*function onPixelMousedown(e) {
             if (e.button !== 0) {
               return;
             }
@@ -332,14 +390,14 @@
               return;
             }
             paintPixel(this);
-          }
-          function onPixelMouseover(e) {
+          }*/
+          /*function onPixelMouseover(e) {
             if (e.buttons !== 1 || that.brush === "fill") {
               return;
             }
             paintPixel(this);
-          }
-          function onPixelDblclick(block, row, col, originalColor) {
+          }*/
+          /*function onPixelDblclick(block, row, col, originalColor) {
             paintPixel(block, row, col);
             if (row > 0) {
               var targetRow = that.shadowRoot.querySelector('*[data-tile-editor-row="'+ (row-1) + '"]');
@@ -369,7 +427,7 @@
                 onPixelDblclick(targetCol, row, col+1, originalColor);
               }
             }
-          }
+          }*/
           var board = this.querySelector(".board");
           if (board) {
             for (var r = 0; r < this.rows; r++) {
@@ -418,7 +476,7 @@
 // allow common color palette for each brick
 // copy tile
 // put this nonsense on github yeah? YEAH!
-          var tileEditorCanvas = this.shadowRoot.querySelector(".tile-editor-canvas");
+          /*var tileEditorCanvas = this.shadowRoot.querySelector(".tile-editor-canvas");
           for (var r = 0; r < 16; r++) {
             var row = document.createElement("div");
             row.classList.add("tile-editor-row");
@@ -432,7 +490,7 @@
               row.appendChild(col);
             }
             tileEditorCanvas.appendChild(row);
-          }
+          }*/
         }
       });
     </script>

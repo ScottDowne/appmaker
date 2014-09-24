@@ -326,17 +326,17 @@
           this.shadowRoot.querySelector(".game-board").appendChild(player);
           this.playerAlive = true;
         },
-        playerActionStart: function(dir) {
+        playerActionStart: function(action) {
           var dateNow;
           if (!this.playerAlive) {
             return;
           }
 
-          if (dir === "left") {
+          if (action === "left") {
             this.playerMovingLeft = true;
             this.playerMovingRight = false;
             this.updatePlayer();
-          } else if (dir === "right") {
+          } else if (action === "right") {
             this.playerMovingLeft = false;
             this.playerMovingRight = true;
             this.updatePlayer();
@@ -349,11 +349,14 @@
             this.playerFire();
           }
         },
-        playerActionStop: function() {
-          var that = this;
-          that.playerMovingLeft = false;
-          that.playerMovingRight = false;
-          that.playerFiring = false;
+        playerActionStop: function(action) {
+          if (action === "left") {
+            this.playerMovingLeft = false;
+          } else if (action === "right") {
+            this.playerMovingRight = false;
+          } else {
+            this.playerFiring = false;
+          }
         },
         killPlayer: function() {
           this.playerAlive = false;

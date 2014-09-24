@@ -9,8 +9,8 @@
 }
 
 :host .tile-palette-container {
-  height: 160px;
-  bottom: -160px;
+  height: 32px;
+  bottom: -32px;
   position: absolute;
   width: 100%;
   border: 1px solid #000;
