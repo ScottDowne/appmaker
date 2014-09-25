@@ -1,4 +1,4 @@
-<polymer-element name="ceci-space-adventure" extends="ceci-element" attributes="playerMoveSpeed playerProjectileSpeed enemyProjectileSpeed playerProjectileRate enemyProjectileRate enemyMoveSpeed" playerProjectileSpeed="0.75" enemyProjectileSpeed="0.75" playerMoveSpeed="0.75" enemyMoveSpeed="0.75"  playerProjectileRate="1" enemyProjectileRate="1">
+<polymer-element name="ceci-space-adventure" extends="ceci-element" attributes="playersprite playerprojectilesprite enemysprite enemyprojectilesprite playerMoveSpeed playerProjectileSpeed enemyProjectileSpeed playerProjectileRate enemyProjectileRate enemyMoveSpeed" playerProjectileSpeed="0.75" enemyProjectileSpeed="0.75" playerMoveSpeed="0.75" enemyMoveSpeed="0.75"  playerProjectileRate="1" enemyProjectileRate="1" enemyprojectilesprite="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAP0lEQVQ4jWNgYGD4jwsvY/j/fxnDf5zyUEwjA2CaiTAEu8R/hkcomHQD+j+hYPIMgIGBM4ASL5CARw0Y+gYAAL3GPbAYiqgIAAAAAElFTkSuQmCC" enemysprite="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZElEQVQ4jb2TOwoAIQxEh72ypxcWYuGH2WzGKlq8Qk0emYAAYCjWAT7Y0/H3rv6AYDZ6LgreGC3gy2JaQDW0k0CgIpwVbLLLXeQJ1Oh1oKLkCOiwxlQCjrD6MgW/zzQE0VuaoAGM6/O4iV4OQgAAAABJRU5ErkJggg==" playersprite="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAWUlEQVQ4jc2TwQoAIAhD9/8/bYdIbKhgJTTwEJvPigIAiWopy6ANwOoDCCByANC+ewAFqGuWA9K1a5gJW2WAdLKzkxxQEB8wnhZ47wCgC+OnHHo2VPkL/wAGG/Fntf8AteIAAAAASUVORK5CYII=" playerprojectilesprite="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVQ4jWNgYGD4TyEeNWCYGPD/PyrGpRiHOpgADBAyAEMd1QygxAtLUTFOA7CrY/j/Hw3jNAC7OlRJQtGGRR1lBgAABrNj2GoxiV8AAAAASUVORK5CYII=">
   <ceci-definition>
     {
       "name": "Space Adventure",
@@ -78,6 +78,30 @@
           "label": "Enemy Projectile Rate",
           "editable": "number",
           "step" : ".1"
+        },
+        "playersprite": {
+          "description": "",
+          "label": "Player Sprite",
+          "editable": "sprite",
+          "scale": 1
+        },
+        "playerprojectilesprite": {
+          "description": "",
+          "label": "Player Projectile Sprite",
+          "editable": "sprite",
+          "scale": 1
+        },
+        "enemysprite": {
+          "description": "",
+          "label": "Enemy Sprite",
+          "editable": "sprite",
+          "scale": 1
+        },
+        "enemyprojectilesprite": {
+          "description": "",
+          "label": "Enemy Projectile Sprite",
+          "editable": "sprite",
+          "scale": 1
         }
       }
     }
@@ -199,7 +223,7 @@
 
           function createEnemyProjectile(enemy) {
             var projectileElement = document.createElement("div");
-            projectileElement.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVQ4jWNgYGD4TyEeNWCYGPD/PyrGpRiHOpgADBAyAEMd1QygxAtLUTFOA7CrY/j/Hw3jNAC7OlRJQtGGRR1lBgAABrNj2GoxiV8AAAAASUVORK5CYII=)";
+            projectileElement.style.backgroundImage = "url(" + that.enemyprojectilesprite + ")";
             var left = enemy.left;
             var top = 16;
             var projectile = {
@@ -216,7 +240,7 @@
 
           function createPlayerProjectile() {
             var projectileElement = document.createElement("div");
-            projectileElement.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVQ4jWNgYGD4TyEeNWCYGPD/PyrGpRiHOpgADBAyAEMd1QygxAtLUTFOA7CrY/j/Hw3jNAC7OlRJQtGGRR1lBgAABrNj2GoxiV8AAAAASUVORK5CYII=)";
+            projectileElement.style.backgroundImage = "url(" + that.playerprojectilesprite + ")";
             var left = that.player.position.left;
             var top = that.player.position.top;
             var projectile = {
@@ -321,6 +345,7 @@
           var player = document.createElement("div");
           player.classList.add("player");
           player.classList.add("sprite");
+          player.style.backgroundImage = "url(" + this.playersprite + ")";
           player.style.transform = "translate(0px, 278px)";
           this.player.element = player;
           this.shadowRoot.querySelector(".game-board").appendChild(player);
@@ -386,7 +411,7 @@
             alive: true,
             fireTimestamp: Date.now()/1000
           };
-          enemyElement.style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAb0lEQVQ4jc2TwQ3AMAgD2X+X7tMJuob7aSJw7LZSHsnDnwAng5WICExqB8BxXl25iEf5TfRqAEi/Aa0AVLm+cGTlwKyq7THA3WlIoQNoBTOsY+ThfIdPQLHfhtMar4CSAANQewaAojvrNoV1f2FGN8g2pF6X9BjjAAAAAElFTkSuQmCC)";
+          enemyElement.style.backgroundImage = "url(" + that.enemysprite + ")";
           enemyElement.classList.add("sprite");
           this.shadowRoot.querySelector(".game-board").appendChild(enemyElement);
           this.enemies.all.push(enemy);

@@ -12,10 +12,6 @@
   background-color: black;
 }
 
-:host .player {
-  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZUlEQVQ4jdWTOw7AIAxDff9Lu0tpY2OqsFFLSOTjBxkCAFydoa8enAtw/QTABoAdwEoR4K+K/zbUcPqNEoM5QBRQiTRAulv/A9iVAEK1l3MAwswCCKPirUMAvgs1L7Vq3l0mkrwAzXM74XY1VL4AAAAASUVORK5CYII=);
-}
-
 :host .sprite {
   width: 16px;
   height: 16px;

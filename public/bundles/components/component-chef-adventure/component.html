@@ -14,32 +14,38 @@
         "playersprite": {
           "description": "",
           "label": "Player Sprite",
-          "editable": "sprite"
+          "editable": "sprite",
+          "scale": 2
         },
         "groundsprite": {
           "description": "",
           "label": "Ground Sprite",
-          "editable": "sprite"
+          "editable": "sprite",
+          "scale": 2
         },
         "wallsprite": {
           "description": "",
           "label": "Wall Sprite",
-          "editable": "sprite"
+          "editable": "sprite",
+          "scale": 2
         },
         "blueblocksprite": {
           "description": "",
           "label": "Blue Block Sprite",
-          "editable": "sprite"
+          "editable": "sprite",
+          "scale": 2
         },
         "greenblocksprite": {
           "description": "",
           "label": "Green Block Sprite",
-          "editable": "sprite"
+          "editable": "sprite",
+          "scale": 2
         },
         "redblocksprite": {
           "description": "",
           "label": "Red Block Sprite",
-          "editable": "sprite"
+          "editable": "sprite",
+          "scale": 2
         }
       },
       "broadcasts": {
@@ -478,6 +484,7 @@
                 col.setAttribute("data-col", c);
                 col.addEventListener("mousedown", onBlockMousedown);
                 col.addEventListener("mouseover", onBlockOver);
+                col.style.backgroundImage = "url('" + this.groundsprite + "')";
                 row.appendChild(col);
               }
               board.appendChild(row);

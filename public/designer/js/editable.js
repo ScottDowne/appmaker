@@ -96,12 +96,15 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
 
     'sprite': function (element, attributeName, title, value, definition) {
 
+      var scale = definition.scale || 1;
       var previewCanvas = document.createElement("canvas");
       var colorPicker = document.createElement("input");
+      var dataInput = document.createElement("input");
+      dataInput.type = "text";
       colorPicker.type = "color";
       colorPicker.classList.add("sprite-color-picker");
-      previewCanvas.height = 32;
-      previewCanvas.width = 32;
+      previewCanvas.height = 16 * scale;
+      previewCanvas.width = 16 * scale;
       var previewCtx = previewCanvas.getContext("2d");
       var container = document.createElement("div");
       var label = document.createElement("label");
@@ -136,8 +139,11 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
       });
 
       function onPixelMouseup() {
+        dataInput.classList.remove("error");
+        var newData = previewCanvas.toDataURL();
+        dataInput.value = newData;
         window.removeEventListener("mouseup", onPixelMouseup);
-        element.setAttribute(attributeName, previewCanvas.toDataURL());
+        element.setAttribute(attributeName, newData);
       }
       function paintPixel(block, row, col) {
         block.style.backgroundColor = selectedColor;
@@ -145,7 +151,7 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
         previewCtx.fillStyle = selectedColor;
         var row = row || block.parentNode.getAttribute("data-tile-editor-row");
         var col = col || block.getAttribute("data-tile-editor-col");
-        previewCtx.fillRect(col*2,row*2,2,2);
+        previewCtx.fillRect(col*scale,row*scale,scale,scale);
       }
       function onPixelMousedown(e) {
         if (e.button !== 0) {
@@ -162,12 +168,13 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
       }
 
       function fillGrid() {
+        grid.classList.remove("hidden");
         var imgd = previewCtx.getImageData(0, 0, previewCanvas.width, previewCanvas.height);
 
-        for (var x = 0; x < imgd.width; x+=2) {
-          var realX = x/2;
-          for (var y = 0; y < imgd.height; y+=2) {
-            var realY = y/2;
+        for (var x = 0; x < imgd.width; x+=scale) {
+          var realX = x/scale;
+          for (var y = 0; y < imgd.height; y+=scale) {
+            var realY = y/scale;
             var i = x*4+y*4*imgd.width;
             var targetRow = grid.querySelector('*[data-tile-editor-row="'+ (realY) + '"]');
             var targetCol = targetRow.querySelector('*[data-tile-editor-col="'+ (realX) + '"]');
@@ -184,25 +191,44 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
         }
       }
 
-      function fillPreview(data) {
+      function fillPreview(data, callback) {
         var image = document.createElement("img");
-        previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
         image.onload = function() {
+          dataInput.classList.remove("error");
           previewCtx.drawImage(image,0,0);
-          fillGrid();
+          callback && callback();
+        };
+        image.onerror = function() {
+          dataInput.classList.add("error");
         };
         if (!data) {
-          fillGrid();
+          dataInput.classList.remove("error");
+          callback && callback();
           return;
         }
         image.src = data;
       }
+
       fillPreview(value);
+      dataInput.value = value;
+      dataInput.addEventListener("change", function() {
+        fillPreview(this.value, function() {
+          fillGrid();
+        });
+        element.setAttribute(attributeName, this.value);
+      });
 
       container.appendChild(label);
       container.appendChild(previewCanvas);
       container.appendChild(colorPicker);
       container.appendChild(grid);
+      container.addEventListener("click", function() {
+        fillPreview(this.value, function() {
+          fillGrid();
+        });
+      });
+      grid.classList.add("hidden");
+      container.appendChild(dataInput);
 
       return container;
     },
