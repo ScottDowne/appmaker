@@ -1313,9 +1313,21 @@ ul.component-actions {
 
 .editable-attributes .sprite-container {
   .sprite-color-picker {
-    width: 52px;
+    position: absolute;
+    height: 50%;
+    left: 50%;
+    width: 50%;
+    top: 50%;
+    padding: 0;
+  }
+  .colour-div {
+    width: 36px;
     height: 36px;
-    margin-left: 4px;
+    margin: 0px 0px 4px 4px;
+    border-radius: 4px;
+    position: relative;
+    float: left;
+    cursor: pointer;
   }
 
   .hidden {
@@ -1324,6 +1336,17 @@ ul.component-actions {
 
   input.error {
     box-shadow: 0px 0px 2px 1px #F00;
+  }
+
+  canvas {
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .colour-container {
+    height: 160px;
+    width: 160px;
+    float: left;
   }
 
   .grid-container {
@@ -1335,6 +1358,7 @@ ul.component-actions {
     border-left-width: 0;
     height: 160px;
     width: 160px;
+    float: left;
     .tile-editor-row {
       margin: 0;
       height: 9px;

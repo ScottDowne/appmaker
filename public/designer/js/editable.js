@@ -97,12 +97,10 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
     'sprite': function (element, attributeName, title, value, definition) {
 
       var scale = definition.scale || 1;
+      var mainContainer = document.createElement("div");
       var previewCanvas = document.createElement("canvas");
-      var colorPicker = document.createElement("input");
       var dataInput = document.createElement("input");
       dataInput.type = "text";
-      colorPicker.type = "color";
-      colorPicker.classList.add("sprite-color-picker");
       previewCanvas.height = 16 * scale;
       previewCanvas.width = 16 * scale;
       var previewCtx = previewCanvas.getContext("2d");
@@ -112,6 +110,85 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
       container.classList.add("sprite-container");
       var grid = document.createElement("div");
       grid.classList.add("grid-container");
+      var colourContainer = document.createElement("div");
+      colourContainer.classList.add("colour-container");
+
+      var defaultColours = [
+        "rgb(222, 3, 16)",
+        "rgb(232, 47, 10)",
+        "rgb(239, 81, 6)",
+        "rgb(248, 115, 3)",
+        "rgb(248, 146, 0)",
+        "rgb(204, 161, 8)",
+        "rgb(160, 175, 14)",
+        "rgb(120, 188, 19)",
+        "rgb(86, 187, 45)",
+        "rgb(61, 172, 93)",
+        "rgb(37, 156, 139)",
+        "rgb(13, 139, 184)",
+        "rgb(19, 115, 210)",
+        "rgb(57, 81, 210)",
+        "rgb(95, 48, 210)",
+        "rgb(138, 11, 210)"
+      ];
+
+      var customColours = {
+        "rgb(222, 3, 16)": "",
+        "rgb(232, 47, 10)": "",
+        "rgb(239, 81, 6)": "",
+        "rgb(248, 115, 3)": "",
+        "rgb(248, 146, 0)": "",
+        "rgb(204, 161, 8)": "",
+        "rgb(160, 175, 14)": "",
+        "rgb(120, 188, 19)": "",
+        "rgb(86, 187, 45)": "",
+        "rgb(61, 172, 93)": "",
+        "rgb(37, 156, 139)": "",
+        "rgb(13, 139, 184)": "",
+        "rgb(19, 115, 210)": "",
+        "rgb(57, 81, 210)": "",
+        "rgb(95, 48, 210)": "",
+        "rgb(138, 11, 210)": ""
+      };
+
+      // Need to do this on demand
+      function createColours() {
+        mainContainer.appendChild(colourContainer);
+
+        defaultColours.forEach(function(value) {
+
+          var colourPicker;
+          var colourDiv;
+          colourPicker = document.createElement("input");
+          colourDiv = document.createElement("div");
+          colourDiv.classList.add("colour-div");
+          colourPicker.type = "color";
+          colourPicker.classList.add("sprite-color-picker");
+
+          colourDiv.style.backgroundColor = value;
+          var parts = value.replace("rgb(", "").replace(")", "").split(", ");
+          var colourHash = "#" + parts.map(function(c) {
+            c = parseInt(c,10).toString(16);
+            if (c.length <= 1) {
+              c = "0" + c;
+            }
+            return c;
+          }).join("");
+          colourPicker.value = colourHash;
+          colourDiv.addEventListener("click", function() {
+            selectedColor = this.style.backgroundColor;
+          });
+
+          colourPicker.addEventListener("change", function() {
+            var div = document.createElement("div");
+            div.style.backgroundColor = this.value;
+            colourDiv.style.backgroundColor = this.value;
+            selectedColor = div.style.backgroundColor;
+          });
+          colourDiv.appendChild(colourPicker);
+          colourContainer.appendChild(colourDiv);
+        });
+      }
 
       for (var r = 0; r < 16; r++) {
         var row = document.createElement("div");
@@ -131,12 +208,6 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
       // this string needs to be in rgb(n, n, n) format, it's easier to work with,
       // because canvas color data is in the range of 0-255
       var selectedColor = "rgb(0, 0 ,0)";
-
-      colorPicker.addEventListener("change", function() {
-        var div = document.createElement("div");
-        div.style.backgroundColor = this.value;
-        selectedColor = div.style.backgroundColor;
-      });
 
       function onPixelMouseup() {
         dataInput.classList.remove("error");
@@ -185,7 +256,13 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
               var red = imgd.data[i];
               var green = imgd.data[i+1];
               var blue = imgd.data[i+2];
-              targetCol.style.backgroundColor = "rgb("+red+", "+green+", "+blue+")";
+              var colour = "rgb("+red+", "+green+", "+blue+")";
+              if (!customColours[colour]) {
+                customColours[colour] = colour;
+                defaultColours.pop();
+                defaultColours.unshift(colour);
+              }
+              targetCol.style.backgroundColor = colour;
             }
           }
         }
@@ -220,11 +297,13 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
 
       container.appendChild(label);
       container.appendChild(previewCanvas);
-      container.appendChild(colorPicker);
-      container.appendChild(grid);
-      container.addEventListener("click", function() {
+      mainContainer.appendChild(grid);
+      container.appendChild(mainContainer);
+      container.addEventListener("click", function onClick() {
+        container.removeEventListener("click", onClick);
         fillPreview(this.value, function() {
           fillGrid();
+          createColours();
         });
       });
       grid.classList.add("hidden");
