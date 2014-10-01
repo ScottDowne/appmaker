@@ -208,8 +208,9 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
       // this string needs to be in rgb(n, n, n) format, it's easier to work with,
       // because canvas color data is in the range of 0-255
       var selectedColor = "rgb(0, 0 ,0)";
-
+      var isMouseDown = false;
       function onPixelMouseup() {
+	    isMouseDown = false;
         dataInput.classList.remove("error");
         var newData = previewCanvas.toDataURL();
         dataInput.value = newData;
@@ -225,14 +226,12 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
         previewCtx.fillRect(col*scale,row*scale,scale,scale);
       }
       function onPixelMousedown(e) {
-        if (e.button !== 0) {
-          return;
-        }
+        isMouseDown = true;
         window.addEventListener("mouseup", onPixelMouseup);
         paintPixel(this);
       }
       function onPixelMouseover(e) {
-        if (e.buttons !== 1) {
+        if (!isMouseDown) {
           return;
         }
         paintPixel(this);

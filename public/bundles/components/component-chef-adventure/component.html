@@ -109,7 +109,6 @@
         <div class="palette-blocks">
           <span class="palette-block palette-clear-block palette-selected" data-palette="clear" on-click="{{onTileClicked}}" style="{{clear}}"></span>
           <span class="palette-block palette-wall-block" data-palette="wall" on-click="{{onTileClicked}}" style="{{wall}}"></span>
-          <!--<canvas class="palette-tile-preview" width="32" height="32"></canvas>-->
           <span class="palette-block palette-wall-block palette-blue-block" data-palette="blue" on-click="{{onTileClicked}}" style="{{blue}}"></span>
           <span class="palette-block palette-wall-block palette-green-block" data-palette="green" on-click="{{onTileClicked}}" style="{{green}}"></span>
           <span class="palette-block palette-wall-block palette-red-block" data-palette="red" on-click="{{onTileClicked}}" style="{{red}}"></span>
@@ -117,16 +116,7 @@
           <span class="palette-block palette-greenswitch" data-palette="greenswitch" on-click="{{onTileClicked}}" style="{{greenswitch}}"></span>
           <span class="palette-block palette-redswitch" data-palette="redswitch" on-click="{{onTileClicked}}" style="{{redswitch}}"></span>
         </div>
-        <!--<div class="palette-blocks">
-          <input type="color" class="tile-editor-colour-picker" on-change="{{onColourPickerChange}}">
-          <span class="palette-button palette-done-block" on-click="{{onDoneClicked}}"></span>
-          <span class="palette-button palette-paint-block" on-click="{{onPaintClicked}}"></span>
-          <span class="palette-button palette-fill-block" on-click="{{onFillClicked}}"></span>
-        </div>-->
       </div>
-      <!--<div class="tile-editor-container">
-        <div class="tile-editor-canvas"></div>
-      </div>-->
     </div>
     <shadow></shadow>
   </template>
@@ -139,31 +129,13 @@
           this.cols = 9;
           this.generateBoard();
           this.palette = "clear";
-          //this.brush = "paint";
-          // this string needs to be in rgb(n, n, n) format, it's easier to work with
-          //this.selectedColor = "rgb(0, 0 ,0)";
-
-          //this.canvas = this.shadowRoot.querySelector(".palette-tile-preview");
-          //this.ctx = this.canvas.getContext("2d");
-          //this.fillTilePreview(this.shadowRoot.querySelector(".palette-clear-block"));
-        },
-        /*onColourPickerChange: function(event, detail, sender) {
-          var div = document.createElement("div");
-          div.style.backgroundColor = sender.value;
-          this.selectedColor = div.style.backgroundColor;
-        },*/
-        /*onDoneClicked: function() {
-          var color = "url('" + this.canvas.toDataURL() + "')";
-          var palette = this.shadowRoot.querySelector(".palette-selected");
-          this[selected.getAttribute("data-palette")] = "background-image: " + color + ";";
-        },*/
         groundspriteChanged: function() {
           var color = "url('" + this.groundsprite + "')";
           var palette = this.shadowRoot.querySelector(".palette-clear-block");
           this[palette.getAttribute("data-palette")] = "background-image: " + color + ";";
         },
         playerspriteChanged: function() {
-          var player = this.querySelector(".player");
+          var player = this.shadowRoot.querySelector(".player");
           if (!player) {
             return;
           }
@@ -189,61 +161,18 @@
           var palette = this.shadowRoot.querySelector(".palette-red-block");
           this[palette.getAttribute("data-palette")] = "background-image: " + color + ";";
         },
-        /*onPaintClicked: function() {
-          this.brush = "paint";
-        },
-        onFillClicked: function() {
-          this.brush = "fill";
-        },*/
         onTileClicked: function(event, detail, sender) {
           this.shadowRoot.querySelector(".palette-selected").classList.remove("palette-selected");
           sender.classList.add("palette-selected");
           this.palette = sender.getAttribute("data-palette");
-          //this.fillTilePreview(sender);
         },
-        /*fillTileEditor: function() {
-          var imgd = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
-
-          for (var x = 0; x < imgd.width; x+=2) {
-            var realX = x/2;
-            for (var y = 0; y < imgd.height; y+=2) {
-              var realY = y/2;
-              var i = x*4+y*4*imgd.width;
-              var targetRow = this.shadowRoot.querySelector('*[data-tile-editor-row="'+ (realY) + '"]');
-              var targetCol = targetRow.querySelector('*[data-tile-editor-col="'+ (realX) + '"]');
-              // for now convert transparent to white
-              if (imgd.data[i+3] === 0) {
-                targetCol.style.backgroundColor = "rgb(255, 255, 255)";
-              } else {
-                var red = imgd.data[i];
-                var green = imgd.data[i+1];
-                var blue = imgd.data[i+2];
-                targetCol.style.backgroundColor = "rgb("+red+", "+green+", "+blue+")";
-              }
-            }
-          }
-        },*/
-        /*fillTilePreview: function(sender) {
-          var that = this;
-          var image = document.createElement("img");
-          that.ctx.clearRect(0, 0, that.canvas.width, that.canvas.height);
-          image.onload = function() {
-            that.ctx.drawImage(image,0,0);
-            that.fillTileEditor();
-          };
-          if (!sender.style.backgroundImage) {
-            that.fillTileEditor();
-            return;
-          }
-          image.src = sender.style.backgroundImage.replace("url(\"", "").replace("\")", "");
-        },*/
         buttonpress: function(direction) {
-          var player = this.querySelector(".player");
+          var player = this.shadowRoot.querySelector(".player");
           if (!player) {
             return;
           }
-          var playerRow = player.offsetTop / 32; //parseInt(player.parentNode.getAttribute("data-row"), 10);
-          var playerCol = player.offsetLeft / 32; //parseInt(player.getAttribute("data-col"), 10);
+          var playerRow = player.offsetTop / 32;
+          var playerCol = player.offsetLeft / 32;
           var targetCol;
 
           if (direction === "up") {
@@ -253,7 +182,7 @@
               return;
             }
             playerRow--;
-            var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
+            var targetRow = this.shadowRoot.querySelector('*[data-row="'+ playerRow + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
           } else if (direction === "down") {
             if (playerRow === 8) {
@@ -262,7 +191,7 @@
               return;
             }
             playerRow++;
-            var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
+            var targetRow = this.shadowRoot.querySelector('*[data-row="'+ playerRow + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
           } else if (direction === "left") {
             if (playerCol === 0) {
@@ -271,7 +200,7 @@
               return;
             }
             playerCol--;
-            var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
+            var targetRow = this.shadowRoot.querySelector('*[data-row="'+ playerRow + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
           } else if (direction === "right") {
             if (playerCol === 8) {
@@ -280,14 +209,13 @@
               return;
             }
             playerCol++;
-            var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
+            var targetRow = this.shadowRoot.querySelector('*[data-row="'+ playerRow + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
           }
           if (targetCol) {
             if (!targetCol.classList.contains("wall") || targetCol.classList.contains("pressed")) {
               player.style.top = (playerRow * 32) + "px";
               player.style.left = (playerCol * 32) + "px";
-              //targetCol.classList.add("player");
               if (targetCol.classList.contains("redswitch")) {
                 this.broadcast("switched", "red");
                 this.switched("red");
@@ -314,28 +242,24 @@
         },
         enterleft: function(row) {
           this.enter(row, 0);
-          //this.enter(this.querySelector("*[data-row='"+ row + "'] .leftside"));
         },
         enterright: function(row) {
           this.enter(row, 8);
-          //this.enter(this.querySelector("*[data-row='"+ row + "'] .rightside"));
         },
         entertop: function(col) {
           this.enter(0, col);
-          //this.enter(this.querySelector(".topside [data-col='"+ col + "'] "));
         },
         enterbottom: function(col) {
           this.enter(8, col);
-          //this.enter(this.querySelector(".bottomside [data-col='"+ col + "'] "));
         },
         enter: function(row, col) {
           var that = this;
           setTimeout( function() {
-            var player = that.querySelector(".player");
+            var player = that.shadowRoot.querySelector(".player");
             if (!player) {
               player = document.createElement("div");
               player.classList.add("player");
-              that.querySelector(".board").appendChild(player);
+              that.shadowRoot.querySelector(".board").appendChild(player);
             }
             player.style.backgroundImage = "url('" + that.playersprite + "')";
             player.style.top = (row * 32) + "px";
@@ -347,11 +271,11 @@
           if (color !== "red" && color !== "blue" && color !== "green") {
             return;
           }
-          var wallsToUnPress = this.querySelectorAll(".col.wall");
+          var wallsToUnPress = this.shadowRoot.querySelectorAll(".col.wall");
           for (var i = 0; i < wallsToUnPress.length; i++) {
             wallsToUnPress[i].classList.remove("pressed");
           }
-          var wallsToPress = this.querySelectorAll("." + color + ".col.wall");
+          var wallsToPress = this.shadowRoot.querySelectorAll("." + color + ".col.wall");
           for (var i = 0; i < wallsToPress.length; i++) {
             wallsToPress[i].classList.add("pressed");
           }
@@ -367,7 +291,7 @@
             block.classList.remove("green");
             block.classList.remove("wall");
             if (that.palette !== "clear") {
-              if ("red blue green".contains(that.palette)) {
+              if ("red blue green".indexOf(that.palette) !== -1) {
                 block.classList.add("wall");
               }
               block.classList.add(that.palette);
@@ -376,83 +300,30 @@
             var backgroundImage = selectedPalette.style.backgroundImage;
             block.style.backgroundImage = backgroundImage;
           }
+		  var isMouseDown = false;
+		  function onMouseUp() {
+		    isMouseDown = false;
+			window.removeEventListener("mouseup", onMouseUp);
+		  }
           function onBlockMousedown(e) {
-            if (e.button !== 0 || !that.palette || !that.classList.contains("selected")) {
+            if (!that.palette || !that.classList.contains("selected")) {
+              return;
+            }
+			e.preventDefault();
+			window.addEventListener("mouseup", onMouseUp);
+			isMouseDown = true;
+            paintBlock(this);
+          }
+          function onBlockOver() {
+            if (!isMouseDown || !that.palette || !that.classList.contains("selected")) {
               return;
             }
             paintBlock(this);
           }
-          function onBlockOver(e) {
-            if (e.buttons !== 1 || !that.palette || !that.classList.contains("selected")) {
-              return;
-            }
-            paintBlock(this);
-          }
-          /*function paintPixel(block, row, col) {
-            block.style.backgroundColor = that.selectedColor;
-
-            that.ctx.fillStyle = that.selectedColor;
-            var row = row || block.parentNode.getAttribute("data-tile-editor-row");
-            var col = col || block.getAttribute("data-tile-editor-col");
-            that.ctx.fillRect(col*2,row*2,2,2);
-          }*/
-          /*function onPixelMousedown(e) {
-            if (e.button !== 0) {
-              return;
-            }
-            if (that.brush === "fill") {
-              var row = parseInt(this.parentNode.getAttribute("data-tile-editor-row"), 10);
-              var col = parseInt(this.getAttribute("data-tile-editor-col"), 10);
-              var originalColor = this.style.backgroundColor;
-
-              if (originalColor !== that.selectedColor) {
-                onPixelDblclick(this, row, col, originalColor);
-              }
-              return;
-            }
-            paintPixel(this);
-          }*/
-          /*function onPixelMouseover(e) {
-            if (e.buttons !== 1 || that.brush === "fill") {
-              return;
-            }
-            paintPixel(this);
-          }*/
-          /*function onPixelDblclick(block, row, col, originalColor) {
-            paintPixel(block, row, col);
-            if (row > 0) {
-              var targetRow = that.shadowRoot.querySelector('*[data-tile-editor-row="'+ (row-1) + '"]');
-              var targetCol = targetRow.querySelector('*[data-tile-editor-col="'+ (col) + '"]');
-              if (targetCol.style.backgroundColor === originalColor) {
-                onPixelDblclick(targetCol, row-1, col, originalColor);
-              }
-            }
-            if (row < 15) {
-              var targetRow = that.shadowRoot.querySelector('*[data-tile-editor-row="'+ (row+1) + '"]');
-              var targetCol = targetRow.querySelector('*[data-tile-editor-col="'+ (col) + '"]');
-              if (targetCol.style.backgroundColor === originalColor) {
-                onPixelDblclick(targetCol, row+1, col, originalColor);
-              }
-            }
-            if (col > 0) {
-              var targetRow = that.shadowRoot.querySelector('*[data-tile-editor-row="'+ (row) + '"]');
-              var targetCol = targetRow.querySelector('*[data-tile-editor-col="'+ (col-1) + '"]');
-              if (targetCol.style.backgroundColor === originalColor) {
-                onPixelDblclick(targetCol, row, col-1, originalColor);
-              }
-            }
-            if (col < 15) {
-              var targetRow = that.shadowRoot.querySelector('*[data-tile-editor-row="'+ (row) + '"]');
-              var targetCol = targetRow.querySelector('*[data-tile-editor-col="'+ (col+1) + '"]');
-              if (targetCol.style.backgroundColor === originalColor) {
-                onPixelDblclick(targetCol, row, col+1, originalColor);
-              }
-            }
-          }*/
-          var board = this.querySelector(".board");
+          var board = this.shadowRoot.querySelector(".board");
           if (board) {
             for (var r = 0; r < this.rows; r++) {
-              var row = this.querySelector('*[data-row="'+ r + '"]');
+              var row = board.querySelector('*[data-row="'+ r + '"]');
               for (var c = 0; c < this.cols; c++) {
                 var col = row.querySelector('*[data-col="'+ c + '"]');
                 col.addEventListener("mousedown", onBlockMousedown);
@@ -489,29 +360,8 @@
               }
               board.appendChild(row);
             }
-            this.appendChild(board);
+            this.shadowRoot.appendChild(board);
           }
-// tile varients
-// make tiles cross brick able. import export using collections?
-// need switch "animation"
-// allow common color palette for each brick
-// copy tile
-// put this nonsense on github yeah? YEAH!
-          /*var tileEditorCanvas = this.shadowRoot.querySelector(".tile-editor-canvas");
-          for (var r = 0; r < 16; r++) {
-            var row = document.createElement("div");
-            row.classList.add("tile-editor-row");
-            row.setAttribute("data-tile-editor-row", r);
-            for (var c = 0; c < 16; c++) {
-              var col = document.createElement("span");
-              col.setAttribute("data-tile-editor-col", c);
-              col.classList.add("tile-editor-pixel");
-              col.addEventListener("mouseover", onPixelMouseover);
-              col.addEventListener("mousedown", onPixelMousedown);
-              row.appendChild(col);
-            }
-            tileEditorCanvas.appendChild(row);
-          }*/
         }
       });
     </script>

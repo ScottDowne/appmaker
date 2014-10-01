@@ -4,7 +4,7 @@
   position: relative;
 }
 
-:host.selected .tile-palette-container {
+:host(.selected) .tile-palette-container {
   display: block;
 }
 
