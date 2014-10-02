@@ -104,6 +104,7 @@
   </ceci-definition>
   <template>
     <link rel="stylesheet" href="component.css"></link>
+    <div class="player-container"></div>
     <div class="tile-palette-container">
       <div class="tile-palette">
         <div class="palette-blocks">
@@ -136,7 +137,7 @@
           this[palette.getAttribute("data-palette")] = "background-image: " + color + ";";
         },
         playerspriteChanged: function() {
-          var player = this.shadowRoot.querySelector(".player");
+          var player = this.querySelector(".player");
           if (!player) {
             return;
           }
@@ -168,7 +169,7 @@
           this.palette = sender.getAttribute("data-palette");
         },
         buttonpress: function(direction) {
-          var player = this.shadowRoot.querySelector(".player");
+          var player = this.querySelector(".player");
           if (!player) {
             return;
           }
@@ -256,11 +257,15 @@
         enter: function(row, col) {
           var that = this;
           setTimeout( function() {
-            var player = that.shadowRoot.querySelector(".player");
+            var player = that.querySelector(".player");
             if (!player) {
               player = document.createElement("div");
+              player.style.height = "32px";
+              player.style.width = "32px";
+              player.style.position = "absolute";
+
               player.classList.add("player");
-              that.shadowRoot.appendChild(player);
+              that.querySelector(".board").appendChild(player);
             }
             player.style.backgroundImage = "url('" + that.playersprite + "')";
             player.style.top = (row * 32) + "px";
@@ -301,18 +306,18 @@
             var backgroundImage = selectedPalette.style.backgroundImage;
             block.style.backgroundImage = backgroundImage;
           }
-		  var isMouseDown = false;
-		  function onMouseUp() {
-		    isMouseDown = false;
-			window.removeEventListener("mouseup", onMouseUp);
-		  }
+          var isMouseDown = false;
+          function onMouseUp() {
+            isMouseDown = false;
+          window.removeEventListener("mouseup", onMouseUp);
+          }
           function onBlockMousedown(e) {
             if (!that.palette || !that.classList.contains("selected")) {
               return;
             }
-			e.preventDefault();
-			window.addEventListener("mouseup", onMouseUp);
-			isMouseDown = true;
+            e.preventDefault();
+            window.addEventListener("mouseup", onMouseUp);
+            isMouseDown = true;
             paintBlock(this);
           }
           function onBlockOver() {
@@ -336,13 +341,13 @@
             board = document.createElement("div");
             board.classList.add("board");
             board.style.fontSize = 0;
-			board.style.margin = "auto";
-			board.style.width = "288px";
-			board.style.position = "relative";
+            board.style.margin = "auto";
+            board.style.width = "288px";
+            board.style.position = "relative";
 
             for (var r = 0; r < this.rows; r++) {
               var row = document.createElement("div");
-			  row.style.margin = "auto";
+              row.style.margin = "auto";
               row.classList.add("row");
               row.setAttribute("data-row", r);
               if (r === 0) {
@@ -352,18 +357,18 @@
               }
               for (var c = 0; c < this.cols; c++) {
                 var col = document.createElement("span");
-				col.style.height = "32px";
-				col.style.width = "32px";
-				col.style.display = "inline-block";
-				col.style.padding = 0;
-				col.style.cursor = "pointer";
+                col.style.height = "32px";
+                col.style.width = "32px";
+                col.style.display = "inline-block";
+                col.style.padding = 0;
+                col.style.cursor = "pointer";
                 col.classList.add("col");
                 if (c === 0) {
                   col.classList.add("leftside");
                 } else if (c === 8) {
                   col.classList.add("rightside");
                 }
-                col.style = this.clear;
+
                 col.setAttribute("data-col", c);
                 col.addEventListener("mousedown", onBlockMousedown);
                 col.addEventListener("mouseover", onBlockOver);

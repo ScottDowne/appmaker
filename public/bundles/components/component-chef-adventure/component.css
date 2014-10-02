@@ -1,6 +1,6 @@
 :host {
   display: block;
-  width: 288px;
+  width: 100%;
   position: relative;
   margin: auto;
 }
@@ -39,12 +39,6 @@
   padding: 0;
   cursor: pointer;
   
-}
-
-:host .player {
-  height: 32px;
-  width: 32px;
-  position: absolute;
 }
 
 :host .palette-selected {
