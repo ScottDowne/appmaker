@@ -1,7 +1,8 @@
 :host {
   display: block;
-  width: 100%;
+  width: 288px;
   position: relative;
+  margin: auto;
 }
 
 :host(.selected) .tile-palette-container {
@@ -31,26 +32,7 @@
   cursor: pointer;
 }
 
-:host .palette-done-block:after {
-  content: "D";
-  font-size: 23px;
-  position: absolute;
-}
-
-:host .palette-paint-block:after {
-  content: "P";
-  font-size: 23px;
-  position: absolute;
-}
-
-:host .palette-fill-block:after {
-  content: "F";
-  font-size: 23px;
-  position: absolute;
-}
-
-:host .palette-block,
-:host .col {
+:host .palette-block {
   height: 32px;
   width: 32px;
   display: inline-block;
@@ -59,73 +41,14 @@
   
 }
 
-:host .palette-wall-block,
-:host .col.wall {
-  
-
-}
-
-:host .col.wall.pressed {
-}
-
-:host .col.wall:after {
-  content: "";
-}
-
-:host .palette-redswitch:after,
-:host .col.redswitch:after {
-  font-size: 23px;
-  position: absolute;
-}
-
-:host .palette-blueswitch:after,
-:host .col.blueswitch:after {
-  font-size: 23px;
-  position: absolute;
-}
-
-:host .palette-greenswitch:after,
-:host .col.greenswitch:after {
-  font-size: 23px;
-  position: absolute;
-}
-
 :host .player {
   height: 32px;
   width: 32px;
   position: absolute;
 }
 
-:host .palette-red-block,
-:host .col.red.wall {
-  
-
-}
-
-:host .palette-blue-block,
-:host .col.blue.wall {
-  
-}
-
-:host .palette-green-block,
-:host .col.green.wall {
-  
-
-}
-
 :host .palette-selected {
   opacity: 0.5;
-}
-
-:host .row {
-  margin: auto;
-}
-
-:host .board {
-  font-size: 0;
-  margin: auto;
-  width: 288px;
-  position: relative;
 }
 
 :host .tile-editor-canvas {

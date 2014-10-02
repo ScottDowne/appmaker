@@ -183,7 +183,7 @@
               return;
             }
             playerRow--;
-            var targetRow = this.shadowRoot.querySelector('*[data-row="'+ playerRow + '"]');
+            var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
           } else if (direction === "down") {
             if (playerRow === 8) {
@@ -192,7 +192,7 @@
               return;
             }
             playerRow++;
-            var targetRow = this.shadowRoot.querySelector('*[data-row="'+ playerRow + '"]');
+            var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
           } else if (direction === "left") {
             if (playerCol === 0) {
@@ -201,7 +201,7 @@
               return;
             }
             playerCol--;
-            var targetRow = this.shadowRoot.querySelector('*[data-row="'+ playerRow + '"]');
+            var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
           } else if (direction === "right") {
             if (playerCol === 8) {
@@ -210,7 +210,7 @@
               return;
             }
             playerCol++;
-            var targetRow = this.shadowRoot.querySelector('*[data-row="'+ playerRow + '"]');
+            var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
           }
           if (targetCol) {
@@ -260,7 +260,7 @@
             if (!player) {
               player = document.createElement("div");
               player.classList.add("player");
-              that.shadowRoot.querySelector(".board").appendChild(player);
+              that.shadowRoot.appendChild(player);
             }
             player.style.backgroundImage = "url('" + that.playersprite + "')";
             player.style.top = (row * 32) + "px";
@@ -272,11 +272,11 @@
           if (color !== "red" && color !== "blue" && color !== "green") {
             return;
           }
-          var wallsToUnPress = this.shadowRoot.querySelectorAll(".col.wall");
+          var wallsToUnPress = this.querySelectorAll(".col.wall");
           for (var i = 0; i < wallsToUnPress.length; i++) {
             wallsToUnPress[i].classList.remove("pressed");
           }
-          var wallsToPress = this.shadowRoot.querySelectorAll("." + color + ".col.wall");
+          var wallsToPress = this.querySelectorAll("." + color + ".col.wall");
           for (var i = 0; i < wallsToPress.length; i++) {
             wallsToPress[i].classList.add("pressed");
           }
@@ -321,7 +321,7 @@
             }
             paintBlock(this);
           }
-          var board = this.shadowRoot.querySelector(".board");
+          var board = this.querySelector(".board");
           if (board) {
             for (var r = 0; r < this.rows; r++) {
               var row = board.querySelector('*[data-row="'+ r + '"]');
@@ -335,8 +335,14 @@
           } else {
             board = document.createElement("div");
             board.classList.add("board");
+            board.style.fontSize = 0;
+			board.style.margin = "auto";
+			board.style.width = "288px";
+			board.style.position = "relative";
+
             for (var r = 0; r < this.rows; r++) {
               var row = document.createElement("div");
+			  row.style.margin = "auto";
               row.classList.add("row");
               row.setAttribute("data-row", r);
               if (r === 0) {
@@ -346,6 +352,11 @@
               }
               for (var c = 0; c < this.cols; c++) {
                 var col = document.createElement("span");
+				col.style.height = "32px";
+				col.style.width = "32px";
+				col.style.display = "inline-block";
+				col.style.padding = 0;
+				col.style.cursor = "pointer";
                 col.classList.add("col");
                 if (c === 0) {
                   col.classList.add("leftside");
@@ -361,7 +372,7 @@
               }
               board.appendChild(row);
             }
-            this.shadowRoot.appendChild(board);
+            this.appendChild(board);
           }
         }
       });
