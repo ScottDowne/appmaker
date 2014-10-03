@@ -100,6 +100,10 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
       var mainContainer = document.createElement("div");
       var previewCanvas = document.createElement("canvas");
       var dataInput = document.createElement("input");
+      var expandIcon = document.createElement("span");
+      expandIcon.classList.add("icon");
+      expandIcon.classList.add("icon-angle-down");
+      expandIcon.classList.add("expand-sprite-editor");
       dataInput.type = "text";
       previewCanvas.height = 16 * scale;
       previewCanvas.width = 16 * scale;
@@ -112,25 +116,6 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
       grid.classList.add("grid-container");
       var colourContainer = document.createElement("div");
       colourContainer.classList.add("colour-container");
-
-      var defaultColours = [
-        "rgb(222, 3, 16)",
-        "rgb(232, 47, 10)",
-        "rgb(239, 81, 6)",
-        "rgb(248, 115, 3)",
-        "rgb(248, 146, 0)",
-        "rgb(204, 161, 8)",
-        "rgb(160, 175, 14)",
-        "rgb(120, 188, 19)",
-        "rgb(86, 187, 45)",
-        "rgb(61, 172, 93)",
-        "rgb(37, 156, 139)",
-        "rgb(13, 139, 184)",
-        "rgb(19, 115, 210)",
-        "rgb(57, 81, 210)",
-        "rgb(95, 48, 210)",
-        "rgb(138, 11, 210)"
-      ];
 
       var customColours = {
         "rgb(222, 3, 16)": "",
@@ -151,19 +136,23 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
         "rgb(138, 11, 210)": ""
       };
 
+      var defaultColours = Object.keys(customColours);
+
       // Need to do this on demand
       function createColours() {
         mainContainer.appendChild(colourContainer);
 
         defaultColours.forEach(function(value) {
 
-          var colourPicker;
-          var colourDiv;
-          colourPicker = document.createElement("input");
-          colourDiv = document.createElement("div");
+          var colourPicker = document.createElement("input");
+          var colourDiv = document.createElement("div");
+          var colourPickerDisplay = document.createElement("div");
           colourDiv.classList.add("colour-div");
           colourPicker.type = "color";
-          colourPicker.classList.add("sprite-color-picker");
+          colourPickerDisplay.classList.add("sprite-color-picker");
+          colourPickerDisplay.addEventListener("click", function() {
+            colourPicker.click();
+          });
 
           colourDiv.style.backgroundColor = value;
           var parts = value.replace("rgb(", "").replace(")", "").split(", ");
@@ -185,7 +174,7 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
             colourDiv.style.backgroundColor = this.value;
             selectedColor = div.style.backgroundColor;
           });
-          colourDiv.appendChild(colourPicker);
+          colourDiv.appendChild(colourPickerDisplay);
           colourContainer.appendChild(colourDiv);
         });
       }
@@ -238,7 +227,6 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
       }
 
       function fillGrid() {
-        grid.classList.remove("hidden");
         var imgd = previewCtx.getImageData(0, 0, previewCanvas.width, previewCanvas.height);
 
         for (var x = 0; x < imgd.width; x+=scale) {
@@ -296,16 +284,32 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
 
       container.appendChild(label);
       container.appendChild(previewCanvas);
+      container.appendChild(expandIcon);
       mainContainer.appendChild(grid);
       container.appendChild(mainContainer);
-      container.addEventListener("click", function onClick() {
-        container.removeEventListener("click", onClick);
-        fillPreview(this.value, function() {
-          fillGrid();
-          createColours();
-        });
-      });
-      grid.classList.add("hidden");
+
+      function onExpandIconClick() {
+        if (expandIcon.classList.contains("icon-angle-down")) {
+          mainContainer.classList.remove("hidden");
+          expandIcon.classList.remove("icon-angle-down");
+          expandIcon.classList.add("icon-angle-up");
+        } else {
+          mainContainer.classList.add("hidden");
+          expandIcon.classList.add("icon-angle-down");
+          expandIcon.classList.remove("icon-angle-up");
+        }
+      }
+      // First click creates the content, following clicks just hide/show.
+      function onExpandIconFirstClick() {
+        expandIcon.removeEventListener("click", onExpandIconFirstClick);
+        expandIcon.addEventListener("click", onExpandIconClick);
+        onExpandIconClick();
+        fillGrid();
+        createColours();
+      }
+
+      expandIcon.addEventListener("click", onExpandIconFirstClick);
+      mainContainer.classList.add("hidden");
       container.appendChild(dataInput);
 
       return container;

@@ -1313,21 +1313,28 @@ ul.component-actions {
 
 .editable-attributes .sprite-container {
   .sprite-color-picker {
+    background-color: white;
+    cursor: pointer;
     position: absolute;
-    height: 50%;
-    left: 50%;
-    width: 50%;
-    top: 50%;
+    height: 60%;
+    left: 70%;
+    width: 60%;
+    top: 70%;
     padding: 0;
+    border-left: solid 1px #000;
+    transform: rotate(45deg);
   }
   .colour-div {
-    width: 36px;
-    height: 36px;
-    margin: 0px 0px 4px 4px;
+    width: 37px;
+    height: 37px;
+    margin: 2px;
     border-radius: 4px;
     position: relative;
     float: left;
     cursor: pointer;
+    border: 1px solid #000;
+    overflow: hidden;
+    box-sizing: border-box;
   }
 
   .hidden {
@@ -1340,13 +1347,24 @@ ul.component-actions {
 
   canvas {
     margin-bottom: 4px;
-    display: block;
+    border: solid #888 1px;
+  }
+
+  .expand-sprite-editor {
+    font-size: 26px;
+    color: #888;
+    vertical-align: top;
+    display: inline-block;
+    margin-left: 10px;
+    cursor: pointer;
   }
 
   .colour-container {
     height: 160px;
-    width: 160px;
+    width: 164px;
     float: left;
+    margin-left: -2px;
+    margin-top: -2px;
   }
 
   .grid-container {
@@ -1359,6 +1377,7 @@ ul.component-actions {
     height: 160px;
     width: 160px;
     float: left;
+    margin-right: 10px;
     .tile-editor-row {
       margin: 0;
       height: 9px;
