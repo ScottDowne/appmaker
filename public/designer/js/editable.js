@@ -142,7 +142,7 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
       function createColours() {
         mainContainer.appendChild(colourContainer);
 
-        defaultColours.forEach(function(value) {
+        defaultColours.forEach(function(value, index) {
 
           var colourPicker = document.createElement("input");
           var colourDiv = document.createElement("div");
@@ -164,15 +164,30 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
             return c;
           }).join("");
           colourPicker.value = colourHash;
-          colourDiv.addEventListener("click", function() {
-            selectedColor = this.style.backgroundColor;
-          });
+          function onClick() {
+            selectedColor = colourDiv.style.backgroundColor;
+            var selectedPalette = colourContainer.querySelector(".colour-div.selected");
+            if (selectedPalette) {
+              selectedPalette.classList.remove("selected");
+            }
+            colourDiv.classList.add("selected");
+          }
+          colourDiv.addEventListener("click", onClick);
+
+          if (index === 0) {
+            onClick();
+          }
 
           colourPicker.addEventListener("change", function() {
             var div = document.createElement("div");
             div.style.backgroundColor = this.value;
             colourDiv.style.backgroundColor = this.value;
             selectedColor = div.style.backgroundColor;
+            var selectedPalette = colourContainer.querySelector(".colour-div.selected");
+            if (selectedPalette) {
+              selectedPalette.classList.remove("selected");
+            }
+            colourDiv.classList.add("selected");
           });
           colourDiv.appendChild(colourPickerDisplay);
           colourContainer.appendChild(colourDiv);
@@ -193,13 +208,9 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
         }
         grid.appendChild(row);
       }
-
-      // this string needs to be in rgb(n, n, n) format, it's easier to work with,
-      // because canvas color data is in the range of 0-255
-      var selectedColor = "rgb(0, 0 ,0)";
       var isMouseDown = false;
       function onPixelMouseup() {
-	    isMouseDown = false;
+	      isMouseDown = false;
         dataInput.classList.remove("error");
         var newData = previewCanvas.toDataURL();
         dataInput.value = newData;

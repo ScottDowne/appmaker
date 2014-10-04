@@ -1323,6 +1323,12 @@ ul.component-actions {
     padding: 0;
     border-left: solid 1px #000;
     transform: rotate(45deg);
+    &:hover {
+      height: 80%;
+      left: 60%;
+      width: 80%;
+      top: 60%;
+    }
   }
   .colour-div {
     width: 37px;
@@ -1335,6 +1341,9 @@ ul.component-actions {
     border: 1px solid #000;
     overflow: hidden;
     box-sizing: border-box;
+    &.selected {
+      box-shadow: 0 0 4px black;
+    }
   }
 
   .hidden {
