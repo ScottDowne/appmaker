@@ -10,8 +10,7 @@
 }
 
 :host .tile-palette-container {
-  height: 32px;
-  bottom: -32px;
+  bottom: -96px;
   position: absolute;
   width: 100%;
   border: 1px solid #000;
@@ -48,6 +47,28 @@
 :host .tile-editor-canvas {
   height: 160px;
   width: 160px;
+}
+
+:host .palette-clearobject {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  overflow: hidden;
+  border: 1px solid #888;
+  cursor: pointer;
+}
+
+:host .palette-clearobject span {
+  height: 150%;
+  width: 150%;
+  top: 27%;
+  left: 27%;
+  position: absolute;
+  display: inline-block;
+  border-left: 2px solid red;
+  transform: rotate(45deg);
+  cursor: pointer;
 }
 
 :host .tile-editor-container {

@@ -1330,6 +1330,32 @@ ul.component-actions {
       top: 60%;
     }
   }
+  .sprite-toolbar {
+    height: 32px;
+  }
+  .clear-palette {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+    overflow: hidden;
+    border: 1px solid #888;
+    cursor: pointer;
+    &.selected {
+      box-shadow: 0 0 4px black;
+    }
+    span {
+      height: 150%;
+      width: 150%;
+      top: 27%;
+      left: 27%;
+      position: absolute;
+      display: inline-block;
+      border-left: 2px solid red;
+      transform: rotate(45deg);
+      cursor: pointer;
+    }
+  }
   .colour-div {
     width: 37px;
     height: 37px;

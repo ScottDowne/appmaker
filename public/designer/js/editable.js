@@ -115,7 +115,23 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
       var grid = document.createElement("div");
       grid.classList.add("grid-container");
       var colourContainer = document.createElement("div");
+      var toolBar = document.createElement("div");
+      toolBar.classList.add("sprite-toolbar");
       colourContainer.classList.add("colour-container");
+      var clearPalette = document.createElement("span");
+      clearPalette.classList.add("clear-palette");
+      toolBar.appendChild(clearPalette);
+      var redLine = document.createElement("span");
+      clearPalette.appendChild(redLine);
+
+      clearPalette.addEventListener("click", function() {
+        clearPalette.classList.add("selected");
+        selectedColor = "";
+        var selectedPalette = colourContainer.querySelector(".colour-div.selected");
+        if (selectedPalette) {
+          selectedPalette.classList.remove("selected");
+        }
+      });
 
       var customColours = {
         "rgb(222, 3, 16)": "",
@@ -169,6 +185,8 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
             var selectedPalette = colourContainer.querySelector(".colour-div.selected");
             if (selectedPalette) {
               selectedPalette.classList.remove("selected");
+            } else {
+              clearPalette.classList.remove("selected");
             }
             colourDiv.classList.add("selected");
           }
@@ -218,12 +236,16 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
         element.setAttribute(attributeName, newData);
       }
       function paintPixel(block, row, col) {
-        block.style.backgroundColor = selectedColor;
-
-        previewCtx.fillStyle = selectedColor;
         var row = row || block.parentNode.getAttribute("data-tile-editor-row");
         var col = col || block.getAttribute("data-tile-editor-col");
-        previewCtx.fillRect(col*scale,row*scale,scale,scale);
+        if (!selectedColor) {
+          block.style.backgroundColor = "rgba(0, 0, 0, 0)";
+          previewCtx.clearRect(col*scale,row*scale,scale,scale);
+        } else {
+          block.style.backgroundColor = selectedColor;
+          previewCtx.fillStyle = selectedColor;
+          previewCtx.fillRect(col*scale,row*scale,scale,scale);
+        }
       }
       function onPixelMousedown(e) {
         isMouseDown = true;
@@ -254,7 +276,11 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
               var red = imgd.data[i];
               var green = imgd.data[i+1];
               var blue = imgd.data[i+2];
+              var alpha = imgd.data[i+3];
               var colour = "rgb("+red+", "+green+", "+blue+")";
+              if (imgd.data[i+3] === 0) {
+                colour = "rgba("+red+", "+green+", "+blue+", " + alpha + ")";
+              }
               if (!customColours[colour]) {
                 customColours[colour] = colour;
                 defaultColours.pop();
@@ -296,6 +322,7 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
       container.appendChild(label);
       container.appendChild(previewCanvas);
       container.appendChild(expandIcon);
+      mainContainer.appendChild(toolBar);
       mainContainer.appendChild(grid);
       container.appendChild(mainContainer);
 
