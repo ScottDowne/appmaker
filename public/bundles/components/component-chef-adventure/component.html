@@ -131,13 +131,17 @@
           "description": "",
           "label": ""
         },
+        "entertile": {
+          "description": "",
+          "label": ""
+        },
         "pushblock": {
           "description": "",
-          "label": "Push the block in front of player"
+          "label": "Push Block"
         },
         "destroyblock": {
           "description": "",
-          "label": "Destroy the block in front of player"
+          "label": "Destroy Block"
         }
       }
     }
@@ -323,6 +327,18 @@
         },
         enterbottom: function(col) {
           this.enter(8, col);
+        },
+        entertile: function(tile) {
+          var targetBlock = this.querySelector('*[data-col-type="'+ tile + '"]');
+          if (!targetBlock) {
+            // If we didn't find a valid block, we enter at a default location.
+            // This makes things easier to setup for the first time.
+            this.enter(0, 1);
+            return;
+          }
+          var targetCol = targetBlock.getAttribute("data-col");
+          var targetRow = targetBlock.parentNode.getAttribute("data-row");
+          this.enter(targetRow, targetCol);
         },
         destroyblock: function() {
           var player = this.querySelector(".player");
@@ -568,6 +584,10 @@
           }
           var board = this.querySelector(".board");
           if (board) {
+            var player = board.querySelector(".player");
+            if (player) {
+              player.parentNode.removeChild(player);
+            }
             for (var r = 0; r < this.rows; r++) {
               var row = board.querySelector('*[data-row="'+ r + '"]');
               for (var c = 0; c < this.cols; c++) {

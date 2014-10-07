@@ -54,10 +54,10 @@
         },
         signal : function(value){
           if (value.toString().toLowerCase() === this.checkif.toLowerCase()) {
-            this.broadcast("true", "true");
+            this.broadcast("true", value);
           }
           else {
-            this.broadcast("false", "false");
+            this.broadcast("false", value);
           }
         }
       });
