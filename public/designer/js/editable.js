@@ -124,7 +124,7 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
       var redLine = document.createElement("span");
       clearPalette.appendChild(redLine);
 
-      clearPalette.addEventListener("click", function() {
+      clearPalette.addEventListener("mousedown", function() {
         clearPalette.classList.add("selected");
         selectedColor = "";
         var selectedPalette = colourContainer.querySelector(".colour-div.selected");
@@ -190,7 +190,7 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
             }
             colourDiv.classList.add("selected");
           }
-          colourDiv.addEventListener("click", onClick);
+          colourDiv.addEventListener("mousedown", onClick);
 
           if (index === 0) {
             onClick();
@@ -271,7 +271,7 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
             var targetCol = targetRow.querySelector('*[data-tile-editor-col="'+ (realX) + '"]');
             // for now convert transparent to white
             if (imgd.data[i+3] === 0) {
-              targetCol.style.backgroundColor = "rgb(255, 255, 255)";
+              targetCol.style.backgroundColor = "rgba(0, 0, 0, 0)";
             } else {
               var red = imgd.data[i];
               var green = imgd.data[i+1];
@@ -313,7 +313,8 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
       fillPreview(value);
       dataInput.value = value;
       dataInput.addEventListener("change", function() {
-        fillPreview(this.value, function() {
+        var value = this.value;
+        fillPreview(value, function() {
           fillGrid();
         });
         element.setAttribute(attributeName, this.value);
@@ -339,14 +340,14 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
       }
       // First click creates the content, following clicks just hide/show.
       function onExpandIconFirstClick() {
-        expandIcon.removeEventListener("click", onExpandIconFirstClick);
-        expandIcon.addEventListener("click", onExpandIconClick);
+        expandIcon.removeEventListener("mousedown", onExpandIconFirstClick);
+        expandIcon.addEventListener("mousedown", onExpandIconClick);
         onExpandIconClick();
         fillGrid();
         createColours();
       }
 
-      expandIcon.addEventListener("click", onExpandIconFirstClick);
+      expandIcon.addEventListener("mousedown", onExpandIconFirstClick);
       mainContainer.classList.add("hidden");
       container.appendChild(dataInput);
 
