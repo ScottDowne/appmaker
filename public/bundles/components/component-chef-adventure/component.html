@@ -101,7 +101,6 @@
           "description": "",
           "label": "Block collision"
         },
-// need to do this
         "objectcollision": {
           "description": "",
           "label": "An object stepped on"
@@ -152,10 +151,9 @@
           "description": "",
           "label": "Destroy Block"
         },
-// need to do this
         "removeobject": {
           "description": "",
-          "label": "Destroy Block"
+          "label": "Destroy Object"
         }
       }
     }
@@ -270,6 +268,24 @@
             player.parentNode.removeChild(player);
           }
         },
+        removeobject: function() {
+          var player = this.querySelector(".player");
+          if (!player) {
+            return;
+          }
+          var playerRow = player.offsetTop / 32;
+          var playerCol = player.offsetLeft / 32;
+          var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
+          var targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
+          if (!targetCol) {
+            return;
+          }
+          var objectToRemove = targetCol.querySelector(".object-block");
+          if (!objectToRemove || !objectToRemove.parentNode) {
+            return;
+          }
+          objectToRemove.parentNode.removeChild(objectToRemove)
+        },
         buttonpress: function(direction) {
           var player = this.querySelector(".player");
           if (!player) {
@@ -313,11 +329,16 @@
             var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
           }
+          var objectSteppedOn;
           if (targetCol) {
             if (!targetCol.classList.contains("wall")) {
               player.style.top = (playerRow * 32) + "px";
               player.style.left = (playerCol * 32) + "px";
               this.broadcast("tilestep", targetCol.getAttribute("data-col-type"));
+              objectSteppedOn = targetCol.querySelector(".object-block");
+              if (objectSteppedOn) {
+                this.broadcast("objectcollision", objectSteppedOn.getAttribute("data-col-type"));
+              }
             } else {
               this.broadcast("blockcollision", targetCol.getAttribute("data-col-type"));
             }
@@ -577,10 +598,10 @@
               block.appendChild(objectBlock);
             }
 
-            //block.setAttribute("data-col-type", that.palette);
             var selectedPalette = that.shadowRoot.querySelector(".palette-selected");
             var backgroundImage = selectedPalette.style.backgroundImage;
             objectBlock.style.backgroundImage = backgroundImage;
+            objectBlock.setAttribute("data-col-type", that.objectPalette);
           }
           var isMouseDown = false;
           function onMouseUp() {
