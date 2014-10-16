@@ -584,7 +584,7 @@
                 this.broadcast("objectcollision", objectSteppedOn.getAttribute("data-col-type"));
               }
             } else {
-              this.broadcast("blockcollision", targetCol.getAttribute("data-col-type"));
+              this.broadcast("blockcollision", targetCol.querySelector(".wall-block").getAttribute("data-col-type"));
             }
           }
         },
@@ -807,7 +807,6 @@
             block.style.backgroundImage = backgroundImage;
           }
           function paintObject(block) {
-
             var objectBlock = block.querySelector(".object-block");
 
             if (that.objectPalette === "clearobject") {
@@ -817,7 +816,7 @@
               return;
             } else if (!objectBlock) {
               objectBlock = document.createElement("span");
-              objectBlock.classList.add("wall-block");
+              objectBlock.classList.add("object-block");
               objectBlock.style.position = "absolute";
               objectBlock.style.height = "100%";
               objectBlock.style.width = "100%";
