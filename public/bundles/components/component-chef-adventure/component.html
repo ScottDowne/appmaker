@@ -270,6 +270,14 @@
         "removeobject": {
           "description": "",
           "label": "Destroy Object"
+        },
+        "createobject": {
+          "description": "Creates an object infront of the player",
+          "label": "Create Object"
+        },
+        "createwall": {
+          "description": "Creates a wall infront of the player",
+          "label": "Create Wall"
         }
       }
     }
@@ -521,6 +529,81 @@
             return;
           }
           objectToRemove.parentNode.removeChild(objectToRemove)
+        },
+        createobject: function(objectType) {
+          var player = this.querySelector(".player");
+          if (!player) {
+            return;
+          }
+          var playerRow = player.offsetTop / 32;
+          var playerCol = player.offsetLeft / 32;
+          if (this.direction === "up") {
+            playerRow--;
+          }
+          if (this.direction === "down") {
+            playerRow++;
+          }
+          if (this.direction === "left") {
+            playerCol--;
+          }
+          if (this.direction === "right") {
+            playerCol++;
+          }
+          var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
+          var targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
+          if (!targetCol) {
+            return;
+          }
+          var objectBlock = document.createElement("span");
+          objectBlock.classList.add("object-block");
+          objectBlock.style.position = "absolute";
+          objectBlock.style.height = "100%";
+          objectBlock.style.width = "100%";
+          targetCol.appendChild(objectBlock);
+          var paletteBlock = this.shadowRoot.querySelector('*[data-palette="'+ objectType + '"]');
+          if (!paletteBlock) {
+            return;
+          }
+          objectBlock.style.backgroundImage = paletteBlock.style.backgroundImage;
+          objectBlock.setAttribute("data-col-type", objectType);
+        },
+        createwall: function(wallType) {
+          var player = this.querySelector(".player");
+          if (!player) {
+            return;
+          }
+          var playerRow = player.offsetTop / 32;
+          var playerCol = player.offsetLeft / 32;
+          if (this.direction === "up") {
+            playerRow--;
+          }
+          if (this.direction === "down") {
+            playerRow++;
+          }
+          if (this.direction === "left") {
+            playerCol--;
+          }
+          if (this.direction === "right") {
+            playerCol++;
+          }
+          var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
+          var targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
+          if (!targetCol) {
+            return;
+          }
+          var objectBlock = document.createElement("span");
+          objectBlock.classList.add("wall-block");
+          objectBlock.style.position = "absolute";
+          objectBlock.style.height = "100%";
+          objectBlock.style.width = "100%";
+          targetCol.appendChild(objectBlock);
+// make sure this is only walls and not objects
+          var paletteBlock = this.shadowRoot.querySelector('*[data-palette="'+ wallType + '"]');
+          if (!paletteBlock) {
+            return;
+          }
+          objectBlock.style.backgroundImage = paletteBlock.style.backgroundImage;
+          objectBlock.setAttribute("data-col-type", wallType);
         },
         buttonpress: function(direction) {
           var player = this.querySelector(".player");
