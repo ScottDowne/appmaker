@@ -300,20 +300,17 @@
             <span class="palette-block palette-ground9-block" data-palette="ground9" on-click="{{onTileClicked}}" style="{{ground9}}"></span>
           </div>
           <div>
-            <span class="palette-block palette-wall1-block" data-palette="wall1" on-click="{{onTileClicked}}" style="{{wall1}}"></span>
-            <span class="palette-block palette-wall2-block" data-palette="wall2" on-click="{{onTileClicked}}" style="{{wall2}}"></span>
-            <span class="palette-block palette-wall3-block" data-palette="wall3" on-click="{{onTileClicked}}" style="{{wall3}}"></span>
-            <span class="palette-block palette-wall4-block" data-palette="wall4" on-click="{{onTileClicked}}" style="{{wall4}}"></span>
-            <span class="palette-block palette-wall5-block" data-palette="wall5" on-click="{{onTileClicked}}" style="{{wall5}}"></span>
-            <span class="palette-block palette-wall6-block" data-palette="wall6" on-click="{{onTileClicked}}" style="{{wall6}}"></span>
-            <span class="palette-block palette-wall7-block" data-palette="wall7" on-click="{{onTileClicked}}" style="{{wall7}}"></span>
-            <span class="palette-block palette-wall8-block" data-palette="wall8" on-click="{{onTileClicked}}" style="{{wall8}}"></span>
-            <span class="palette-block palette-wall9-block" data-palette="wall9" on-click="{{onTileClicked}}" style="{{wall9}}"></span>
+            <span class="palette-block palette-wall1-block" data-palette="wall1" on-click="{{onWallClicked}}" style="{{wall1}}"></span>
+            <span class="palette-block palette-wall2-block" data-palette="wall2" on-click="{{onWallClicked}}" style="{{wall2}}"></span>
+            <span class="palette-block palette-wall3-block" data-palette="wall3" on-click="{{onWallClicked}}" style="{{wall3}}"></span>
+            <span class="palette-block palette-wall4-block" data-palette="wall4" on-click="{{onWallClicked}}" style="{{wall4}}"></span>
+            <span class="palette-block palette-wall5-block" data-palette="wall5" on-click="{{onWallClicked}}" style="{{wall5}}"></span>
+            <span class="palette-block palette-wall6-block" data-palette="wall6" on-click="{{onWallClicked}}" style="{{wall6}}"></span>
+            <span class="palette-block palette-wall7-block" data-palette="wall7" on-click="{{onWallClicked}}" style="{{wall7}}"></span>
+            <span class="palette-block palette-wall8-block" data-palette="wall8" on-click="{{onWallClicked}}" style="{{wall8}}"></span>
+            <span class="palette-block palette-wall9-block" data-palette="wall9" on-click="{{onWallClicked}}" style="{{wall9}}"></span>
           </div>
           <div>
-            <span class="palette-block palette-clearobject" data-palette="clearobject" on-click="{{onObjectClicked}}" style="{{clearobject}}">
-              <span></span>
-            </span>
             <span class="palette-block palette-object1" data-palette="object1" on-click="{{onObjectClicked}}" style="{{object1}}"></span>
             <span class="palette-block palette-object2" data-palette="object2" on-click="{{onObjectClicked}}" style="{{object2}}"></span>
             <span class="palette-block palette-object3" data-palette="object3" on-click="{{onObjectClicked}}" style="{{object3}}"></span>
@@ -322,6 +319,11 @@
             <span class="palette-block palette-object6" data-palette="object6" on-click="{{onObjectClicked}}" style="{{object6}}"></span>
             <span class="palette-block palette-object7" data-palette="object7" on-click="{{onObjectClicked}}" style="{{object7}}"></span>
             <span class="palette-block palette-object8" data-palette="object8" on-click="{{onObjectClicked}}" style="{{object8}}"></span>
+          </div>
+          <div>
+            <span class="palette-block palette-clearobject" data-palette="clearobject" on-click="{{onClearClicked}}" style="{{clearobject}}">
+              <span></span>
+            </span>
           </div>
         </div>
       </div>
@@ -337,7 +339,7 @@
           this.cols = 9;
           this.generateBoard();
           this.clearobject = "background-image: rgba(0, 0, 0, 0);";
-          this.palette = "ground1";
+          this.groundPalette = "ground1";
 		    },
         groundsprite1Changed: function() {
           var color = "url('" + this.groundsprite1 + "')";
@@ -479,14 +481,30 @@
         onTileClicked: function(event, detail, sender) {
           this.shadowRoot.querySelector(".palette-selected").classList.remove("palette-selected");
           sender.classList.add("palette-selected");
-          this.palette = sender.getAttribute("data-palette");
+          this.groundPalette = sender.getAttribute("data-palette");
           this.objectPalette = "";
+          this.wallPalette = "";
         },
         onObjectClicked: function(event, detail, sender) {
           this.shadowRoot.querySelector(".palette-selected").classList.remove("palette-selected");
           sender.classList.add("palette-selected");
-          this.palette = "";
+          this.groundPalette = "";
           this.objectPalette = sender.getAttribute("data-palette");
+          this.wallPalette = "";
+        },
+        onWallClicked: function(event, detail, sender) {
+          this.shadowRoot.querySelector(".palette-selected").classList.remove("palette-selected");
+          sender.classList.add("palette-selected");
+          this.groundPalette = "";
+          this.objectPalette = "";
+          this.wallPalette = sender.getAttribute("data-palette");
+        },
+        onClearClicked: function(event, detail, sender) {
+          this.shadowRoot.querySelector(".palette-selected").classList.remove("palette-selected");
+          sender.classList.add("palette-selected");
+          this.groundPalette = "";
+          this.objectPalette = sender.getAttribute("data-palette");
+          this.wallPalette = sender.getAttribute("data-palette");
         },
         removeplayer: function() {
           var player = this.querySelector(".player");
@@ -557,7 +575,7 @@
           }
           var objectSteppedOn;
           if (targetCol) {
-            if (!targetCol.classList.contains("wall")) {
+            if (!targetCol.querySelector(".wall-block")) {
               player.style.top = (playerRow * 32) + "px";
               player.style.left = (playerCol * 32) + "px";
               this.broadcast("tilestep", targetCol.getAttribute("data-col-type"));
@@ -632,10 +650,8 @@
             playerRow--;
             var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
-            if (targetCol) {
-              targetCol.classList.remove("wall");
-              targetCol.setAttribute("data-col-type", "ground1");
-              targetCol.style.backgroundImage = "url('" + this.groundsprite1 + "')";
+            if (targetCol && targetCol.querySelector(".wall-block")) {
+              targetCol.removeChild(targetCol.querySelector(".wall-block"));
             }
           } else if (direction === "down") {
             if (playerRow === 8) {
@@ -644,10 +660,8 @@
             playerRow++;
             var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
-            if (targetCol) {
-              targetCol.classList.remove("wall");
-              targetCol.setAttribute("data-col-type", "ground1");
-              targetCol.style.backgroundImage = "url('" + this.groundsprite1 + "')";
+            if (targetCol && targetCol.querySelector(".wall-block")) {
+              targetCol.removeChild(targetCol.querySelector(".wall-block"));
             }
           } else if (direction === "left") {
             if (playerCol === 0) {
@@ -656,10 +670,8 @@
             playerCol--;
             var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
-            if (targetCol) {
-              targetCol.classList.remove("wall");
-              targetCol.setAttribute("data-col-type", "ground1");
-              targetCol.style.backgroundImage = "url('" + this.groundsprite1 + "')";
+            if (targetCol && targetCol.querySelector(".wall-block")) {
+              targetCol.removeChild(targetCol.querySelector(".wall-block"));
             }
           } else if (direction === "right") {
             if (playerCol === 8) {
@@ -668,10 +680,8 @@
             playerCol++;
             var targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
             targetCol = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
-            if (targetCol) {
-              targetCol.classList.remove("wall");
-              targetCol.setAttribute("data-col-type", "ground1");
-              targetCol.style.backgroundImage = "url('" + this.groundsprite1 + "')";
+            if (targetCol && targetCol.querySelector(".wall-block")) {
+              targetCol.removeChild(targetCol.querySelector(".wall-block"));
             }
           }
         },
@@ -696,13 +706,10 @@
               playerRow--;
               targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
               otherBlock = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
-              if (otherBlock && !otherBlock.classList.contains("wall")) {
-                targetCol.classList.remove("wall");
-                otherBlock.classList.add("wall");
-                otherBlock.setAttribute("data-col-type", targetCol.getAttribute("data-col-type"));
-                targetCol.setAttribute("data-col-type", "ground1");
-                otherBlock.style.backgroundImage = targetCol.style.backgroundImage;
-                targetCol.style.backgroundImage = "url('" + this.groundsprite1 + "')";
+              if (otherBlock && !otherBlock.querySelector(".wall-block") && targetCol.querySelector(".wall-block")) {
+                var wallBlock = targetCol.querySelector(".wall-block");
+                targetCol.removeChild(wallBlock);
+                otherBlock.appendChild(wallBlock);
               }
             }
           } else if (direction === "down") {
@@ -716,13 +723,10 @@
               playerRow++;
               targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
               otherBlock = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
-              if (otherBlock && !otherBlock.classList.contains("wall")) {
-                targetCol.classList.remove("wall");
-                otherBlock.classList.add("wall");
-                otherBlock.setAttribute("data-col-type", targetCol.getAttribute("data-col-type"));
-                targetCol.setAttribute("data-col-type", "ground1");
-                otherBlock.style.backgroundImage = targetCol.style.backgroundImage;
-                targetCol.style.backgroundImage = "url('" + this.groundsprite1 + "')";
+              if (otherBlock && !otherBlock.querySelector(".wall-block") && targetCol.querySelector(".wall-block")) {
+                var wallBlock = targetCol.querySelector(".wall-block");
+                targetCol.removeChild(wallBlock);
+                otherBlock.appendChild(wallBlock);
               }
             }
           } else if (direction === "left") {
@@ -736,13 +740,10 @@
               playerCol--;
               targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
               otherBlock = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
-              if (otherBlock && !otherBlock.classList.contains("wall")) {
-                targetCol.classList.remove("wall");
-                otherBlock.classList.add("wall");
-                otherBlock.setAttribute("data-col-type", targetCol.getAttribute("data-col-type"));
-                targetCol.setAttribute("data-col-type", "ground1");
-                otherBlock.style.backgroundImage = targetCol.style.backgroundImage;
-                targetCol.style.backgroundImage = "url('" + this.groundsprite1 + "')";
+              if (otherBlock && !otherBlock.querySelector(".wall-block") && targetCol.querySelector(".wall-block")) {
+                var wallBlock = targetCol.querySelector(".wall-block");
+                targetCol.removeChild(wallBlock);
+                otherBlock.appendChild(wallBlock);
               }
             }
           } else if (direction === "right") {
@@ -756,13 +757,10 @@
               playerCol++;
               targetRow = this.querySelector('*[data-row="'+ playerRow + '"]');
               otherBlock = targetRow.querySelector('*[data-col="'+ playerCol + '"]');
-              if (otherBlock && !otherBlock.classList.contains("wall")) {
-                targetCol.classList.remove("wall");
-                otherBlock.classList.add("wall");
-                otherBlock.setAttribute("data-col-type", targetCol.getAttribute("data-col-type"));
-                targetCol.setAttribute("data-col-type", "ground1");
-                otherBlock.style.backgroundImage = targetCol.style.backgroundImage;
-                targetCol.style.backgroundImage = "url('" + this.groundsprite1 + "')";
+              if (otherBlock && !otherBlock.querySelector(".wall-block") && targetCol.querySelector(".wall-block")) {
+                var wallBlock = targetCol.querySelector(".wall-block");
+                targetCol.removeChild(wallBlock);
+                otherBlock.appendChild(wallBlock);
               }
             }
           }
@@ -801,15 +799,9 @@
         },
         generateBoard: function() {
           var that = this;
-          function paintBlock(block) {
+          function paintTile(block) {
 
-            if (that.palette.indexOf("wall") === 0) {
-              block.classList.add("wall");
-            } else {
-              block.classList.remove("wall");
-            }
-
-            block.setAttribute("data-col-type", that.palette);
+            block.setAttribute("data-col-type", that.groundPalette);
             var selectedPalette = that.shadowRoot.querySelector(".palette-selected");
             var backgroundImage = selectedPalette.style.backgroundImage;
             block.style.backgroundImage = backgroundImage;
@@ -817,9 +809,15 @@
           function paintObject(block) {
 
             var objectBlock = block.querySelector(".object-block");
-            if (!objectBlock) {
+
+            if (that.objectPalette === "clearobject") {
+              if (objectBlock ) {
+                block.removeChild(objectBlock);
+              }
+              return;
+            } else if (!objectBlock) {
               objectBlock = document.createElement("span");
-              objectBlock.classList.add("object-block");
+              objectBlock.classList.add("wall-block");
               objectBlock.style.position = "absolute";
               objectBlock.style.height = "100%";
               objectBlock.style.width = "100%";
@@ -831,32 +829,62 @@
             objectBlock.style.backgroundImage = backgroundImage;
             objectBlock.setAttribute("data-col-type", that.objectPalette);
           }
+          function paintWall(block) {
+            var wallBlock = block.querySelector(".wall-block");
+
+            if (that.wallPalette === "clearobject") {
+              if (wallBlock ) {
+                block.removeChild(wallBlock);
+              }
+              return;
+            } else if (!wallBlock) {
+              wallBlock = document.createElement("span");
+              wallBlock.classList.add("wall-block");
+              wallBlock.style.position = "absolute";
+              wallBlock.style.height = "100%";
+              wallBlock.style.width = "100%";
+              block.appendChild(wallBlock);
+            }
+
+            var selectedPalette = that.shadowRoot.querySelector(".palette-selected");
+            var backgroundImage = selectedPalette.style.backgroundImage;
+            wallBlock.style.backgroundImage = backgroundImage;
+            wallBlock.setAttribute("data-col-type", that.wallPalette);
+          }
           var isMouseDown = false;
           function onMouseUp() {
             isMouseDown = false;
             window.removeEventListener("mouseup", onMouseUp);
           }
           function onBlockMousedown(e) {
-            if ((!that.palette && !that.objectPalette) || !that.classList.contains("selected")) {
+            if ((!that.groundPalette && !that.objectPalette && !that.wallPalette) || !that.classList.contains("selected")) {
               return;
             }
             e.preventDefault();
             window.addEventListener("mouseup", onMouseUp);
             isMouseDown = true;
-            if (that.palette) {
-              paintBlock(this);
-            } else if (that.objectPalette) {
+            if (that.groundPalette) {
+              paintTile(this);
+            }
+            if (that.objectPalette) {
               paintObject(this);
+            }
+            if (that.wallPalette) {
+              paintWall(this);
             }
           }
           function onBlockOver() {
-            if (!isMouseDown || (!that.palette && !that.objectPalette) || !that.classList.contains("selected")) {
+            if (!isMouseDown || (!that.groundPalette && !that.objectPalette && !that.wallPalette) || !that.classList.contains("selected")) {
               return;
             }
-            if (that.palette) {
-              paintBlock(this);
-            } else if (that.objectPalette) {
+            if (that.groundPalette) {
+              paintTile(this);
+            }
+            if (that.objectPalette) {
               paintObject(this);
+            }
+            if (that.wallPalette) {
+              paintWall(this);
             }
           }
           var board = this.querySelector(".board");
