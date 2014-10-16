@@ -123,6 +123,7 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
       toolBar.appendChild(clearPalette);
       var redLine = document.createElement("span");
       clearPalette.appendChild(redLine);
+      var selectedColor = "";
 
       clearPalette.addEventListener("mousedown", function() {
         clearPalette.classList.add("selected");
@@ -212,20 +213,6 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
         });
       }
 
-      for (var r = 0; r < 16; r++) {
-        var row = document.createElement("div");
-        row.classList.add("tile-editor-row");
-        row.setAttribute("data-tile-editor-row", r);
-        for (var c = 0; c < 16; c++) {
-          var col = document.createElement("span");
-          col.setAttribute("data-tile-editor-col", c);
-          col.classList.add("tile-editor-pixel");
-          col.addEventListener("mouseover", onPixelMouseover);
-          col.addEventListener("mousedown", onPixelMousedown);
-          row.appendChild(col);
-        }
-        grid.appendChild(row);
-      }
       var isMouseDown = false;
       function onPixelMouseup() {
 	      isMouseDown = false;
@@ -340,6 +327,21 @@ define(['jquery', 'inflector', 'l10n', 'colorpicker.core'], function ($, Inflect
       }
       // First click creates the content, following clicks just hide/show.
       function onExpandIconFirstClick() {
+
+        for (var r = 0; r < 16; r++) {
+          var row = document.createElement("div");
+          row.classList.add("tile-editor-row");
+          row.setAttribute("data-tile-editor-row", r);
+          for (var c = 0; c < 16; c++) {
+            var col = document.createElement("span");
+            col.setAttribute("data-tile-editor-col", c);
+            col.classList.add("tile-editor-pixel");
+            col.addEventListener("mouseover", onPixelMouseover);
+            col.addEventListener("mousedown", onPixelMousedown);
+            row.appendChild(col);
+          }
+          grid.appendChild(row);
+        }
         expandIcon.removeEventListener("mousedown", onExpandIconFirstClick);
         expandIcon.addEventListener("mousedown", onExpandIconClick);
         onExpandIconClick();
