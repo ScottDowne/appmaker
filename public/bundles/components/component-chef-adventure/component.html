@@ -1,5 +1,5 @@
 <polymer-element name="ceci-chef-adventure" extends="ceci-element"
-  attributes="ground1 ground2 ground3 ground4 ground5 ground6 ground7 ground8 ground9 wall1 wall2 wall3 wall4 wall5 wall6 wall7 wall8 wall9 blueswitch greenswitch redswitch groundsprite1 groundsprite2 groundsprite3 groundsprite4 groundsprite5 groundsprite6 groundsprite6 groundsprite7 groundsprite8 groundsprite9 wall1sprite wall2sprite wall3sprite wall4sprite wall5sprite wall6sprite wall7sprite wall8sprite wall9sprite playersprite object1sprite object2sprite object3sprite object4sprite object5sprite object6sprite object7sprite object8sprite"
+  attributes="ground1 ground2 ground3 ground4 ground5 ground6 ground7 ground8 ground9 wall1 wall2 wall3 wall4 wall5 wall6 wall7 wall8 wall9 groundsprite1 groundsprite2 groundsprite3 groundsprite4 groundsprite5 groundsprite6 groundsprite6 groundsprite7 groundsprite8 groundsprite9 wall1sprite wall2sprite wall3sprite wall4sprite wall5sprite wall6sprite wall7sprite wall8sprite wall9sprite playersprite object1sprite object2sprite object3sprite object4sprite object5sprite object6sprite object7sprite object8sprite"
   object1sprite="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAzElEQVRYhe3UvQ2DMBAFYIZhA6qMwAbMwAQpYQRYBykrpKSijZSWVFRH9QqecjE/jnxYnPQahPw+2ZaT5JqNk94y+ZV4AShwzd8gwQC84OPzkm8ZplGGaZS676TuO3+QYADechRwMaZ5PxeJD8CFAHEAOHwUwQCuYu0SIkVbSdFW+4/CLEC7hC7A5qMwB+AHZi0gv5eLnBfADwwKtACK4Pt5AAxBMbaSCzj83+GXMDhAW9gF2L31ZgAM0S6Zt0tnFsCQtfFWbAZwTbQzA8rYHDy1wvBhAAAAAElFTkSuQmCC"
   object2sprite="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAgklEQVRYhe3VwQ2AIBBEUXqyBzqlJy7Wsh6Q6AIBzAquZEjmKP/FC8Y8P9TY8DMdwAKtMwL0GaAc3LeueWfJOyuCKAPEy8mcy35+2AqAzjAPXt/JIQAAAAAAAPwEkDy/ACwF4JAMEHa78PWwUkDnYngJAIPEpYFKUBxWA6iCZgSHAg7zXEk/1N6i5AAAAABJRU5ErkJggg=="
   object3sprite="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAo0lEQVRYhe3WQQ6AIAwEwPX/T/JnXOpBQ0SFtlAsRDfhooadiGkE9CFmdY8bgAAQl54QN4CsOIAQQMu6L0uIG4CA04ZHAQewhPwAN8BjMQfIQeJ1BWRMQGumAIgGTtww3I9HdEQFyByAXLEUMj6A+/i+B7gNFCVAM5rdASZHkb1vPQndAVxqXv0wgARSG7M/Ik9AApGCrs+3FA8DKILeKOwK2AD53p+z3UDayAAAAABJRU5ErkJggg=="
@@ -197,10 +197,6 @@
         }
       },
       "broadcasts": {
-        "switched": {
-          "label": "",
-          "description": ""
-        },
         "exitleft": {
           "description": "",
           "label": ""
@@ -231,10 +227,6 @@
         }
       },
       "listeners": {
-        "switched": {
-          "description": "",
-          "label": ""
-        },
         "buttonpress": {
           "description": "",
           "label": ""
@@ -783,19 +775,6 @@
             player.style.left = (col * 32) + "px";
             that.navigateHere();
           });
-        },
-        switched: function(color) {
-          if (color !== "red" && color !== "blue" && color !== "green") {
-            return;
-          }
-          var wallsToUnPress = this.querySelectorAll(".col.wall");
-          for (var i = 0; i < wallsToUnPress.length; i++) {
-            wallsToUnPress[i].classList.remove("pressed");
-          }
-          var wallsToPress = this.querySelectorAll("." + color + ".col.wall");
-          for (var i = 0; i < wallsToPress.length; i++) {
-            wallsToPress[i].classList.add("pressed");
-          }
         },
         generateBoard: function() {
           var that = this;
