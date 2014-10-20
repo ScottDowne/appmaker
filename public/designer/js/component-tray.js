@@ -45,7 +45,8 @@ define(
           "ceci-text-input",
           "ceci-timer",
           "ceci-stopwatch",
-          "ceci-page-navigation"
+          "ceci-page-navigation",
+          "ceci-property-save"
         ]
       },
       "connection": {

@@ -1,0 +1,60 @@
+<polymer-element name="ceci-property-save" attributes="savedvalue" extends="ceci-element">
+  <ceci-definition>
+    {
+      "tags": [],
+      "thumbnail": "./thumbnail.png",
+      "description": "",
+      "name": "Property Save",
+      "broadcasts": {
+        "sendvalue": {
+          "label": "Data",
+          "description": "Sends the stored data."
+        }
+      },
+      "listeners": {
+        "getvalue": {
+          "label": "Get Data",
+          "description": "Sends the stored data."
+        },
+        "setvalue": {
+          "label": "Set Data",
+          "description": "Sets the stored data."
+        }
+      },
+      "attributes": {
+        "savedvalue": {
+          "editable": "text",
+          "label": "Stored Value",
+          "description": "The Stored Value"
+        }
+      }
+    }
+  </ceci-definition>
+  <template>
+    <link rel="stylesheet" href="component.css"></link>
+    <shadow></shadow>
+  </template>
+  <script>
+    Polymer('ceci-property-save', {
+      ready: function () {
+        this.super();
+      },
+      savedvalueChanged: function() {
+        this.saveData({
+          value: this.savedvalue
+        });
+      },
+      setvalue: function(value) {
+        this.savedvalue = value;
+      },
+      getvalue: function() {
+        var data = this.loadData();
+        if (!data || !data.value) {
+          return;
+        }
+        var value = data.value;
+        this.broadcast("sendvalue", value);
+      }
+    });
+  </script>
+</polymer-element>
